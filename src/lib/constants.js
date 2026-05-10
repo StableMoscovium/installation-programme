@@ -1,10 +1,11 @@
 export const EQUIPMENT = [
-  { code: 'SL', label: 'SL', title: 'Scissor lift',    bg: '#E6F1FB', col: '#185FA5' },
-  { code: 'HB', label: 'HB', title: 'HIAB',             bg: '#FAEEDA', col: '#854F0B' },
-  { code: 'EW', label: 'EW', title: 'EWP / boom lift',  bg: '#E1F5EE', col: '#0F6E56' },
-  { code: 'FK', label: 'FK', title: 'Forklift',          bg: '#EEEDFE', col: '#534AB7' },
-  { code: 'TT', label: 'TT', title: 'Travel tower',      bg: '#FAECE7', col: '#993C1D' },
-  { code: 'PG', label: 'PG', title: 'Generator',         bg: '#EAF3DE', col: '#3B6D11' },
+  { code: 'AM', label: 'AM', title: 'Access machine',     bg: '#E6F1FB', col: '#185FA5' },
+  { code: 'HB', label: 'HB', title: 'HIAB',               bg: '#FAEEDA', col: '#854F0B' },
+  { code: 'TT', label: 'TT', title: 'Transport truck',    bg: '#FAECE7', col: '#993C1D' },
+  { code: 'FK', label: 'FK', title: 'Forklift',            bg: '#EEEDFE', col: '#534AB7' },
+  { code: 'PG', label: 'PG', title: 'Generator',           bg: '#EAF3DE', col: '#3B6D11' },
+  { code: 'CO', label: 'CO', title: 'Contractor',          bg: '#FEF0FB', col: '#8B1A8B' },
+  { code: 'IN', label: 'IN', title: 'Inspector',           bg: '#FFF8E6', col: '#8B6914' },
 ]
 
 export const EQ_MAP = Object.fromEntries(EQUIPMENT.map(e => [e.code, e]))
