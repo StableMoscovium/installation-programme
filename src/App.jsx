@@ -1,27 +1,88 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProgrammeCalendar from './components/ProgrammeCalendar'
 import ProjectForm from './components/ProjectForm'
 import ProjectDetail from './components/ProjectDetail'
 import PrepSummary from './components/PrepSummary'
+import { supabase, toDb, fromDb } from './lib/supabase'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('calendar')
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
   const [editingProject, setEditingProject] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  function saveProject(project) {
+  useEffect(() => {
+    async function loadProjects() {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        setError('Failed to load projects')
+        console.error(error)
+      } else {
+        setProjects(data.map(fromDb))
+      }
+      setLoading(false)
+    }
+    loadProjects()
+  }, [])
+
+  async function saveProject(project) {
+    const { error } = await supabase
+      .from('projects')
+      .upsert(toDb(project), { onConflict: 'proj_num' })
+
+    if (error) {
+      console.error('Save failed:', error)
+      return
+    }
+
     setProjects(prev => {
-      const exists = prev.findIndex(p => p.projNum === project.projNum)
-      if (exists >= 0) {
+      const idx = prev.findIndex(p => p.projNum === project.projNum)
+      if (idx >= 0) {
         const updated = [...prev]
-        updated[exists] = project
+        updated[idx] = project
         return updated
       }
       return [...prev, project]
     })
     setActiveTab('calendar')
     setEditingProject(null)
+  }
+
+  async function deleteProject(projNum) {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('proj_num', projNum)
+
+    if (error) {
+      console.error('Delete failed:', error)
+      return
+    }
+
+    setProjects(prev => prev.filter(p => p.projNum !== projNum))
+    setSelectedProject(null)
+    setActiveTab('calendar')
+  }
+
+  async function updatePrep(projNum, prep) {
+    const { error } = await supabase
+      .from('projects')
+      .update({ prep, updated_at: new Date().toISOString() })
+      .eq('proj_num', projNum)
+
+    if (error) {
+      console.error('Prep update failed:', error)
+      return
+    }
+
+    setProjects(prev => prev.map(p => p.projNum === projNum ? { ...p, prep } : p))
+    setSelectedProject(prev => ({ ...prev, prep }))
   }
 
   function openProject(proj) {
@@ -32,12 +93,6 @@ export default function App() {
   function editProject(proj) {
     setEditingProject(proj)
     setActiveTab('input')
-  }
-
-  function deleteProject(projNum) {
-    setProjects(prev => prev.filter(p => p.projNum !== projNum))
-    setSelectedProject(null)
-    setActiveTab('calendar')
   }
 
   return (
@@ -73,32 +128,39 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        {activeTab === 'calendar' && (
+        {loading && (
+          <div style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>
+            Loading projects…
+          </div>
+        )}
+        {error && (
+          <div style={{ padding: '2rem', textAlign: 'center', color: '#c00' }}>
+            {error}
+          </div>
+        )}
+        {!loading && !error && activeTab === 'calendar' && (
           <ProgrammeCalendar
             projects={projects}
             onOpenProject={openProject}
           />
         )}
-        {activeTab === 'input' && (
+        {!loading && activeTab === 'input' && (
           <ProjectForm
             initialData={editingProject}
             onSave={saveProject}
             onCancel={() => { setActiveTab('calendar'); setEditingProject(null) }}
           />
         )}
-        {activeTab === 'detail' && selectedProject && (
+        {!loading && activeTab === 'detail' && selectedProject && (
           <ProjectDetail
             project={selectedProject}
             onBack={() => { setActiveTab('calendar'); setSelectedProject(null) }}
             onEdit={() => editProject(selectedProject)}
             onDelete={() => deleteProject(selectedProject.projNum)}
-            onUpdatePrep={(projNum, prep) => {
-              setProjects(prev => prev.map(p => p.projNum === projNum ? { ...p, prep } : p))
-              setSelectedProject(prev => ({ ...prev, prep }))
-            }}
+            onUpdatePrep={(projNum, prep) => updatePrep(projNum, prep)}
           />
         )}
-        {activeTab === 'report' && (
+        {!loading && activeTab === 'report' && (
           <PrepSummary projects={projects} />
         )}
       </main>
