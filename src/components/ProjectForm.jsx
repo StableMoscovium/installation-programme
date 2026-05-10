@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
 import {
-  EQUIPMENT, TASK_LIBRARY, PREP_STAGES, REGIONS,
+  EQUIPMENT, TASK_LIBRARY, PREP_STAGES, REGIONS, PROJECT_COLOURS,
   MON_NAMES, DAY_NAMES,
-  fmtDate, parseDate, addDays, daysBetween, colourForIndex
+  fmtDate, parseDate, addDays, daysBetween,
 } from '../lib/constants'
-
-let colourCounter = 0
 
 const BLANK_CONTACT = () => ({ role: '', name: '', phone: '', email: '' })
 const BLANK_MOB = () => ({
@@ -35,6 +33,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [accessNotes, setAccessNotes] = useState('')
   const [hsNotes,   setHsNotes]   = useState('')
   const [genNotes,  setGenNotes]  = useState('')
+  const [colour,    setColour]    = useState(PROJECT_COLOURS[0])
 
   // Load existing project data for editing
   useEffect(() => {
@@ -52,6 +51,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setAccessNotes(initialData.accessNotes || '')
     setHsNotes(initialData.hsNotes || '')
     setGenNotes(initialData.genNotes || '')
+    setColour(initialData.colour || PROJECT_COLOURS[0])
   }, [initialData])
 
   function updateContact(i, field, val) {
@@ -112,7 +112,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
       alert('Project number and name are required.')
       return
     }
-    const colour = initialData?.colour || colourForIndex(colourCounter++)
+    // colour comes from state — chosen by user
     const mobMap = {}
     mobs.forEach((m, i) => { mobMap[`mob${i}`] = m })
 
@@ -178,6 +178,30 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
           <div className="field span3">
             <label>Scope notes</label>
             <textarea value={scope} onChange={e => setScope(e.target.value)} placeholder="Brief description of overall scope…" rows={3} />
+          </div>
+          <div className="field span3">
+            <label>Project colour</label>
+            <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+              {PROJECT_COLOURS.map(c => (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => setColour(c)}
+                  title={c.key.replace('m-', '')}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: '50%',
+                    background: c.bg,
+                    border: `3px solid ${c.border}`,
+                    outline: colour.key === c.key ? `3px solid ${c.border}` : '3px solid transparent',
+                    outlineOffset: 2,
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
