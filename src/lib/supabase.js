@@ -22,6 +22,7 @@ export function toDb(project) {
     gen_notes: project.genNotes,
     colour: project.colour,
     milestone: project.milestone ?? 0,
+    milestones_list: project.milestonesList ?? null,
     on_hold: project.onHold ?? false,
     updated_at: new Date().toISOString(),
   }
@@ -43,8 +44,9 @@ export function fromDb(row) {
     hsNotes: row.hs_notes,
     genNotes: row.gen_notes,
     colour: row.colour,
-    milestone: row.milestone ?? 0,
-    onHold:    row.on_hold ?? false,
+    milestone:      row.milestone ?? 0,
+    milestonesList: row.milestones_list ?? null,
+    onHold:         row.on_hold ?? false,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }

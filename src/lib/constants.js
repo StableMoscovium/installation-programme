@@ -54,6 +54,23 @@ export const MILESTONES = [
   { key: 'handover',           short: 'Handover',       label: 'Handover' },
 ]
 
+// Returns the effective milestones array for a project,
+// falling back to the default list + integer progress for old records
+export function getProjectMilestones(project) {
+  if (project.milestonesList && project.milestonesList.length > 0) {
+    return project.milestonesList
+  }
+  return MILESTONES.map((m, i) => ({
+    ...m,
+    done: i < (project.milestone ?? 0),
+    custom: false,
+  }))
+}
+
+export function defaultMilestonesList() {
+  return MILESTONES.map(m => ({ ...m, done: false, custom: false }))
+}
+
 export const REGIONS = [
   'Auckland',
   'Bay of Plenty',

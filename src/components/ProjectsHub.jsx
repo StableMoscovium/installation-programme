@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PREP_STAGES, MILESTONES, MON_NAMES, parseDate } from '../lib/constants'
+import { PREP_STAGES, MILESTONES, MON_NAMES, parseDate, getProjectMilestones } from '../lib/constants'
 
 const TODAY = new Date()
 TODAY.setHours(0, 0, 0, 0)
@@ -111,22 +111,22 @@ function getStats(projects) {
 }
 
 /* ── Milestone bar (display only in hub) ── */
-function MilestoneBar({ milestone }) {
+function MilestoneBar({ project }) {
+  const milestones = getProjectMilestones(project)
   return (
     <div className="milestone-bar">
-      {MILESTONES.map((m, i) => {
-        const complete = milestone > i
-        const current  = milestone === i
+      {milestones.map((m, i, arr) => {
+        const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
         return (
-          <div key={m.key} className="milestone-step">
-            {i > 0 && <div className={`milestone-seg${complete ? ' complete' : ''}`} />}
+          <div key={m.key || i} className="milestone-step">
+            {i > 0 && <div className={`milestone-seg${m.done ? ' complete' : ''}`} />}
             <div
-              className={`milestone-node${complete ? ' complete' : current ? ' current' : ''}`}
+              className={`milestone-node${m.done ? ' complete' : isCurrent ? ' current' : ''}`}
               title={m.label}
               style={{ cursor: 'default' }}
             >
               <div className="milestone-dot" />
-              <div className="milestone-lbl">{m.short}</div>
+              <div className="milestone-lbl">{m.short || m.label}</div>
             </div>
           </div>
         )
@@ -309,7 +309,7 @@ export default function ProjectsHub({ projects, onOpenProject }) {
               </div>
 
               {/* Milestone bar — display only */}
-              <MilestoneBar milestone={project.milestone ?? 0} />
+              <MilestoneBar project={project} />
             </div>
           )
         })}

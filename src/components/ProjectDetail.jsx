@@ -1,6 +1,8 @@
-import { PREP_STAGES, MILESTONES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate } from '../lib/constants'
+import { useState } from 'react'
+import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, getProjectMilestones, defaultMilestonesList } from '../lib/constants'
 
-export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateHold }) {
+export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold }) {
+  const [newMilestone, setNewMilestone] = useState('')
   const mobs = Object.entries(project.mobs || {})
 
   function handlePrepToggle(mobKey, currentPrep, stageIndex) {
@@ -85,35 +87,83 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
       <div className="detail-card" style={{ marginBottom: 12 }}>
         <div className="lifecycle-header">
           <h3 className="detail-card-title" style={{ marginBottom: 0 }}>Project Lifecycle</h3>
-          {project.onHold && (
-            <span className="lifecycle-hold-badge">⏸ On Hold</span>
-          )}
+          {project.onHold && <span className="lifecycle-hold-badge">⏸ On Hold</span>}
         </div>
+
         <div className="lifecycle-list">
-          {MILESTONES.map((m, i) => {
-            const complete = (project.milestone ?? 0) > i
-            const current  = (project.milestone ?? 0) === i
-            const isNext   = i === (project.milestone ?? 0) + 1
-            const locked   = i > (project.milestone ?? 0) + 1
+          {getProjectMilestones(project).map((m, i, arr) => {
+            const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
             return (
               <div
-                key={m.key}
-                className={`lifecycle-row${complete ? ' complete' : current ? ' current' : locked ? ' locked' : ' next'}`}
-                onClick={() => !locked && onUpdateMilestone(i)}
-                title={locked ? 'Complete the current stage first' : m.label}
+                key={m.key || i}
+                className={`lifecycle-row${m.done ? ' complete' : isCurrent ? ' current' : ''}`}
+                onClick={() => {
+                  const updated = arr.map((item, idx) => {
+                    if (m.done) {
+                      // Rewinding — mark this and everything after as undone
+                      return { ...item, done: idx < i }
+                    } else {
+                      // Advancing — mark everything up to and including this as done
+                      return { ...item, done: idx <= i }
+                    }
+                  })
+                  onUpdateMilestonesList(updated)
+                }}
               >
-                <div className={`lifecycle-num${complete ? ' complete' : current ? ' current' : ''}`}>
-                  {complete ? '✓' : i + 1}
+                <div className={`lifecycle-num${m.done ? ' complete' : isCurrent ? ' current' : ''}`}>
+                  {m.done ? '✓' : i + 1}
                 </div>
                 <div className="lifecycle-label">{m.label}</div>
                 <div className="lifecycle-action">
-                  {complete && <span className="lifecycle-tag done">Done</span>}
-                  {current  && <span className="lifecycle-tag current">Current stage</span>}
-                  {isNext   && <span className="lifecycle-tag next">→ Advance to this</span>}
+                  {m.done    && <span className="lifecycle-tag done">Done</span>}
+                  {isCurrent && <span className="lifecycle-tag current">Current — click to complete</span>}
+                  {!m.done && !isCurrent && <span className="lifecycle-tag next">→ Skip to here</span>}
+                  {m.custom && (
+                    <button
+                      className="lifecycle-remove"
+                      onClick={e => {
+                        e.stopPropagation()
+                        onUpdateMilestonesList(arr.filter((_, idx) => idx !== i))
+                      }}
+                      title="Remove milestone"
+                    >×</button>
+                  )}
                 </div>
               </div>
             )
           })}
+        </div>
+
+        {/* Add custom milestone */}
+        <div className="lifecycle-add-row">
+          <input
+            className="lifecycle-add-input"
+            placeholder="Add custom milestone…"
+            value={newMilestone}
+            onChange={e => setNewMilestone(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && newMilestone.trim()) {
+                const current = getProjectMilestones(project)
+                onUpdateMilestonesList([
+                  ...current,
+                  { key: `custom_${Date.now()}`, label: newMilestone.trim(), done: false, custom: true }
+                ])
+                setNewMilestone('')
+              }
+            }}
+          />
+          <button
+            className="lifecycle-add-btn"
+            disabled={!newMilestone.trim()}
+            onClick={() => {
+              const current = getProjectMilestones(project)
+              onUpdateMilestonesList([
+                ...current,
+                { key: `custom_${Date.now()}`, label: newMilestone.trim(), done: false, custom: true }
+              ])
+              setNewMilestone('')
+            }}
+          >+ Add</button>
         </div>
       </div>
 

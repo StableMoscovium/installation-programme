@@ -716,3 +716,31 @@ textarea { resize: vertical; line-height: 1.5; }
 .lifecycle-tag.done    { color: var(--green); background: var(--green-light); }
 .lifecycle-tag.current { color: var(--blue);  background: var(--blue-light); }
 .lifecycle-tag.next    { color: var(--text-2); background: var(--bg); border: 0.5px solid var(--border-md); }
+
+.lifecycle-remove {
+  background: none; border: none; cursor: pointer;
+  font-size: 14px; color: var(--text-3); padding: 0 2px; line-height: 1;
+  margin-left: 6px;
+}
+.lifecycle-remove:hover { color: var(--red); }
+
+.lifecycle-add-row {
+  display: flex; gap: 8px; align-items: center;
+  margin-top: 12px; padding-top: 12px;
+  border-top: 0.5px solid var(--border);
+}
+.lifecycle-add-input {
+  flex: 1; padding: 6px 10px; font-size: 12px;
+  border: 0.5px solid var(--border-md); border-radius: var(--radius-sm);
+  font-family: var(--font); color: var(--text-1); background: var(--surface);
+  outline: none;
+}
+.lifecycle-add-input:focus { border-color: var(--blue); }
+.lifecycle-add-btn {
+  padding: 6px 14px; font-size: 12px; border-radius: var(--radius-sm);
+  border: 0.5px solid var(--blue); background: var(--blue-light);
+  color: var(--blue); cursor: pointer; font-family: var(--font);
+  font-weight: 500; white-space: nowrap;
+}
+.lifecycle-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.lifecycle-add-btn:not(:disabled):hover { background: var(--blue); color: #fff; }

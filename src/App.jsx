@@ -88,6 +88,20 @@ export default function App() {
     }
   }
 
+  async function updateMilestonesList(projNum, milestonesList) {
+    const { error } = await supabase
+      .from('projects')
+      .update({ milestones_list: milestonesList, updated_at: new Date().toISOString() })
+      .eq('proj_num', projNum)
+
+    if (error) { alert(`Update failed: ${error.message}`); return }
+
+    setProjects(prev => prev.map(p =>
+      p.projNum === projNum ? { ...p, milestonesList } : p
+    ))
+    setSelectedProject(prev => prev ? { ...prev, milestonesList } : null)
+  }
+
   async function updateHold(projNum, onHold) {
     const { error } = await supabase
       .from('projects')
@@ -216,6 +230,7 @@ export default function App() {
             onDelete={() => deleteProject(selectedProject.projNum)}
             onUpdatePrep={(mobKey, prep) => updatePrep(selectedProject.projNum, mobKey, prep)}
             onUpdateMilestone={(milestone) => updateMilestone(selectedProject.projNum, milestone)}
+            onUpdateMilestonesList={(list) => updateMilestonesList(selectedProject.projNum, list)}
             onUpdateHold={(onHold) => updateHold(selectedProject.projNum, onHold)}
           />
         )}
