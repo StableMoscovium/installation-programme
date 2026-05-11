@@ -3,6 +3,7 @@ import {
   EQUIPMENT, TASK_LIBRARY, PREP_STAGES, REGIONS, PROJECT_COLOURS,
   MON_NAMES, DAY_NAMES,
   fmtDate, parseDate, addDays, daysBetween,
+  defaultMilestonesList,
 } from '../lib/constants'
 
 const BLANK_MOB = () => ({
@@ -35,8 +36,10 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [hsNotes,   setHsNotes]   = useState('')
   const [genNotes,  setGenNotes]  = useState('')
   const [colour,    setColour]    = useState(PROJECT_COLOURS[0])
-  const [milestone, setMilestone] = useState(0)
-  const [onHold,    setOnHold]    = useState(false)
+  const [milestone,      setMilestone]      = useState(0)
+  const [milestonesList, setMilestonesList] = useState(defaultMilestonesList())
+  const [newMilestone,   setNewMilestone]   = useState('')
+  const [onHold,         setOnHold]         = useState(false)
 
   // Load existing project data for editing
   useEffect(() => {
@@ -55,6 +58,11 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setGenNotes(initialData.genNotes || '')
     setColour(initialData.colour || PROJECT_COLOURS[0])
     setMilestone(initialData.milestone ?? 0)
+    setMilestonesList(
+      initialData.milestonesList?.length > 0
+        ? initialData.milestonesList
+        : defaultMilestonesList()
+    )
     setOnHold(initialData.onHold ?? false)
   }, [initialData])
 
@@ -136,6 +144,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
       genNotes,
       colour,
       milestone,
+      milestonesList,
       onHold,
       createdAt:   initialData?.createdAt || new Date().toISOString(),
       updatedAt:   new Date().toISOString(),
@@ -267,6 +276,49 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
           </div>
         ))}
         <button className="add-link" onClick={addMob}>+ Add mobilisation</button>
+      </section>
+
+      {/* MILESTONES */}
+      <section className="form-section">
+        <h3 className="section-heading">Project milestones</h3>
+        <p className="section-sub">Standard lifecycle stages are pre-loaded. Add or remove milestones to match this project's specific requirements.</p>
+        <div className="milestone-form-list">
+          {milestonesList.map((m, i) => (
+            <div key={m.key || i} className="milestone-form-row">
+              <span className="milestone-form-num">{i + 1}</span>
+              <span className="milestone-form-label">{m.label}</span>
+              <button
+                type="button"
+                className="milestone-form-remove"
+                onClick={() => setMilestonesList(milestonesList.filter((_, idx) => idx !== i))}
+                title="Remove"
+              >×</button>
+            </div>
+          ))}
+        </div>
+        <div className="lifecycle-add-row" style={{ marginTop: 12 }}>
+          <input
+            className="lifecycle-add-input"
+            placeholder="Add custom milestone…"
+            value={newMilestone}
+            onChange={e => setNewMilestone(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && newMilestone.trim()) {
+                setMilestonesList([...milestonesList, { key: `custom_${Date.now()}`, label: newMilestone.trim(), done: false, custom: true }])
+                setNewMilestone('')
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="lifecycle-add-btn"
+            disabled={!newMilestone.trim()}
+            onClick={() => {
+              setMilestonesList([...milestonesList, { key: `custom_${Date.now()}`, label: newMilestone.trim(), done: false, custom: true }])
+              setNewMilestone('')
+            }}
+          >+ Add</button>
+        </div>
       </section>
 
       {/* NOTES */}

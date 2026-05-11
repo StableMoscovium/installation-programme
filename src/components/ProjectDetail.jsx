@@ -1,8 +1,6 @@
-import { useState } from 'react'
-import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, getProjectMilestones, defaultMilestonesList } from '../lib/constants'
+import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, getProjectMilestones } from '../lib/constants'
 
 export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold }) {
-  const [newMilestone, setNewMilestone] = useState('')
   const mobs = Object.entries(project.mobs || {})
 
   function handlePrepToggle(mobKey, currentPrep, stageIndex) {
@@ -98,15 +96,10 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                 key={m.key || i}
                 className={`lifecycle-row${m.done ? ' complete' : isCurrent ? ' current' : ''}`}
                 onClick={() => {
-                  const updated = arr.map((item, idx) => {
-                    if (m.done) {
-                      // Rewinding — mark this and everything after as undone
-                      return { ...item, done: idx < i }
-                    } else {
-                      // Advancing — mark everything up to and including this as done
-                      return { ...item, done: idx <= i }
-                    }
-                  })
+                  const updated = arr.map((item, idx) => ({
+                    ...item,
+                    done: m.done ? idx < i : idx <= i,
+                  }))
                   onUpdateMilestonesList(updated)
                 }}
               >
@@ -117,54 +110,15 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                 <div className="lifecycle-action">
                   {m.done    && <span className="lifecycle-tag done">Done</span>}
                   {isCurrent && <span className="lifecycle-tag current">Current — click to complete</span>}
-                  {!m.done && !isCurrent && <span className="lifecycle-tag next">→ Skip to here</span>}
-                  {m.custom && (
-                    <button
-                      className="lifecycle-remove"
-                      onClick={e => {
-                        e.stopPropagation()
-                        onUpdateMilestonesList(arr.filter((_, idx) => idx !== i))
-                      }}
-                      title="Remove milestone"
-                    >×</button>
-                  )}
+                  {!m.done && !isCurrent && <span className="lifecycle-tag next">→ Advance to here</span>}
                 </div>
               </div>
             )
           })}
         </div>
-
-        {/* Add custom milestone */}
-        <div className="lifecycle-add-row">
-          <input
-            className="lifecycle-add-input"
-            placeholder="Add custom milestone…"
-            value={newMilestone}
-            onChange={e => setNewMilestone(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && newMilestone.trim()) {
-                const current = getProjectMilestones(project)
-                onUpdateMilestonesList([
-                  ...current,
-                  { key: `custom_${Date.now()}`, label: newMilestone.trim(), done: false, custom: true }
-                ])
-                setNewMilestone('')
-              }
-            }}
-          />
-          <button
-            className="lifecycle-add-btn"
-            disabled={!newMilestone.trim()}
-            onClick={() => {
-              const current = getProjectMilestones(project)
-              onUpdateMilestonesList([
-                ...current,
-                { key: `custom_${Date.now()}`, label: newMilestone.trim(), done: false, custom: true }
-              ])
-              setNewMilestone('')
-            }}
-          >+ Add</button>
-        </div>
+        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 10 }}>
+          To add or remove milestones, edit the project.
+        </p>
       </div>
 
       {/* MOBILISATIONS — each as its own full-width card */}
