@@ -5,6 +5,7 @@ export const EQUIPMENT = [
   { code: 'FK', label: 'FK', title: 'Forklift',            bg: '#EEEDFE', col: '#534AB7' },
   { code: 'PG', label: 'PG', title: 'Generator',           bg: '#EAF3DE', col: '#3B6D11' },
   { code: 'CO', label: 'CO', title: 'Contractor',          bg: '#FEF0FB', col: '#8B1A8B' },
+  { code: 'TW', label: 'TW', title: 'Test weights',        bg: '#E8F5E9', col: '#2E7D32' },
   { code: 'IN', label: 'IN', title: 'Inspector',           bg: '#FFF8E6', col: '#8B6914' },
 ]
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   EQUIPMENT, EQ_MAP,
   MON_NAMES, DAY_NAMES,
-  fmtDate, addDays, weekNumber
+  fmtDate, addDays, parseDate, daysBetween, weekNumber
 } from '../lib/constants'
 
 const TODAY = new Date()
@@ -22,7 +22,8 @@ export default function ProgrammeCalendar({ projects, onOpenProject }) {
   projects.forEach(proj => {
     Object.keys(proj.mobs || {}).forEach(mobKey => {
       const mob = proj.mobs[mobKey]
-      Object.keys(mob.days || {}).forEach(iso => {
+      if (!mob.start || !mob.end) return
+      daysBetween(parseDate(mob.start), parseDate(mob.end)).forEach(iso => {
         if (byDay[iso] !== undefined) {
           byDay[iso].push({ proj, mob, mobKey, iso })
         }
