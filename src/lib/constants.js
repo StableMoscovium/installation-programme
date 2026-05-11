@@ -43,15 +43,16 @@ export const PROJECT_COLOURS = [
 ]
 
 export const MILESTONES = [
-  { key: 'acknowledged',       short: 'Acknowledged',   label: 'Project Acknowledged' },
   { key: 'kit_order',          short: 'Kit Order',      label: 'Kit Order Placed' },
-  { key: 'design',             short: 'Design',         label: 'Crane Design' },
+  { key: 'crane_design',       short: 'Design',         label: 'Crane Design' },
   { key: 'drawings',           short: 'Drawings',       label: 'Detailed Drawings' },
-  { key: 'fabrication',        short: 'Fabrication',    label: 'Structural Fabrication' },
-  { key: 'structural_install', short: 'Struct. Install',label: 'Structural Install' },
-  { key: 'crane_fitout',       short: 'Crane Fit Out',  label: 'Crane Fit Out' },
+  { key: 'struct_fab',         short: 'Struct. Fab',    label: 'Structural Fabrication' },
+  { key: 'struct_install',     short: 'Struct. Install',label: 'Structural Install' },
+  { key: 'crane_production',   short: 'Crane Prod.',    label: 'Crane Production' },
   { key: 'crane_install',      short: 'Crane Install',  label: 'Crane Install' },
-  { key: 'handover',           short: 'Handover',       label: 'Handover' },
+  { key: 'commissioning',      short: 'Commission',     label: 'Crane Commissioning' },
+  { key: 'load_test',          short: 'Load Test',      label: 'Load Test' },
+  { key: 'handover',           short: 'Hand Over',      label: 'Hand Over' },
 ]
 
 // Returns the effective milestones array for a project,
