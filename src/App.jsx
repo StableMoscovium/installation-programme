@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import ProgrammeCalendar from './components/ProgrammeCalendar'
+import ProjectsHub from './components/ProjectsHub'
 import ProjectForm from './components/ProjectForm'
 import ProjectDetail from './components/ProjectDetail'
 import PrepSummary from './components/PrepSummary'
@@ -117,10 +118,16 @@ export default function App() {
         </div>
         <nav className="app-nav">
           <button
+            className={`nav-item ${activeTab === 'hub' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('hub'); setSelectedProject(null) }}
+          >
+            <HubIcon /> Projects
+          </button>
+          <button
             className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`}
             onClick={() => { setActiveTab('calendar'); setSelectedProject(null) }}
           >
-            <CalendarIcon /> Programme
+            <CalendarIcon /> Calendar
           </button>
           <button
             className={`nav-item ${activeTab === 'input' ? 'active' : ''}`}
@@ -147,6 +154,12 @@ export default function App() {
           <div style={{ padding: '2rem', textAlign: 'center', color: '#c00' }}>
             {error}
           </div>
+        )}
+        {!loading && !error && activeTab === 'hub' && (
+          <ProjectsHub
+            projects={projects}
+            onOpenProject={openProject}
+          />
         )}
         {!loading && !error && activeTab === 'calendar' && (
           <ProgrammeCalendar
@@ -178,6 +191,13 @@ export default function App() {
   )
 }
 
+function HubIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+    </svg>
+  )
+}
 function CalendarIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

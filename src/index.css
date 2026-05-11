@@ -449,3 +449,117 @@ textarea { resize: vertical; line-height: 1.5; }
   padding: 40px 0; border: 0.5px dashed var(--border-md);
   border-radius: var(--radius-lg);
 }
+
+/* ── PROJECTS HUB ── */
+.hub-page { max-width: 1100px; }
+
+.hub-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 1.6fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.hub-next-card { border-left: 2.5px solid var(--blue); }
+.hub-next-card:hover { background: var(--blue-light); }
+
+.hub-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px;
+}
+.hub-search {
+  max-width: 280px; padding: 7px 12px;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-md);
+  font-size: 13px; font-family: var(--font);
+  background: var(--surface); color: var(--text-1);
+  outline: none;
+}
+.hub-search:focus { border-color: var(--blue); }
+
+.hub-sort-row { display: flex; align-items: center; gap: 4px; }
+.hub-sort-label { font-size: 11px; color: var(--text-3); margin-right: 4px; }
+.hub-sort-btn {
+  padding: 4px 10px; border-radius: 20px; font-size: 11px;
+  border: 0.5px solid var(--border-md); background: transparent;
+  color: var(--text-2); cursor: pointer; font-family: var(--font);
+  transition: all 0.1s;
+}
+.hub-sort-btn:hover  { border-color: var(--blue); color: var(--blue); }
+.hub-sort-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 500; }
+
+.hub-list { display: flex; flex-direction: column; gap: 5px; }
+
+.hub-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 200px 110px 24px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-left: 3px solid var(--border-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: box-shadow 0.12s, border-color 0.12s;
+}
+.hub-row:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+
+.hub-col-identity {}
+.hub-proj-num  { font-size: 10px; font-weight: 600; font-family: var(--font-mono); letter-spacing: 0.06em; }
+.hub-proj-name { font-size: 14px; font-weight: 500; color: var(--text-1); margin-top: 1px; }
+.hub-proj-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; display: flex; gap: 4px; }
+.hub-sep       { color: var(--border-md); }
+
+.hub-col-mob  {}
+.hub-mob-line { display: flex; align-items: center; gap: 6px; }
+.hub-mob-label { font-size: 12px; color: var(--text-2); }
+.hub-mob-count { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+.hub-badge {
+  display: inline-block; padding: 1px 7px; border-radius: 10px;
+  font-size: 10px; font-weight: 600; flex-shrink: 0;
+}
+.hub-badge.on-site { background: var(--green-light); color: var(--green); }
+.hub-badge.soon    { background: var(--amber-light);  color: var(--amber); }
+.hub-badge.done    { background: var(--bg);            color: var(--text-3); }
+
+.hub-col-track  {}
+.hub-no-mob     { font-size: 11px; color: var(--text-3); }
+
+.ship-track-wrap { display: flex; align-items: center; gap: 8px; }
+.ship-track {
+  flex: 1; position: relative; height: 24px;
+}
+.ship-track-rail {
+  position: absolute; top: 50%; left: 4px; right: 10px;
+  height: 2px; background: var(--border); border-radius: 1px;
+  transform: translateY(-50%);
+}
+.ship-track-fill {
+  position: absolute; top: 50%; left: 4px;
+  height: 2px; border-radius: 1px;
+  transform: translateY(-50%);
+  transition: width 0.4s ease;
+  max-width: calc(100% - 14px);
+}
+.ship-track-dot-end {
+  position: absolute; top: 50%; right: 6px;
+  width: 7px; height: 7px; border-radius: 50%;
+  transform: translateY(-50%);
+  transition: background 0.3s;
+}
+.ship-icon {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px; line-height: 1; user-select: none;
+  transition: left 0.4s ease;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+.ship-label { font-size: 10px; font-weight: 500; white-space: nowrap; min-width: 56px; }
+
+.hub-col-prep {}
+.hub-prep-dots { display: flex; align-items: center; gap: 3px; }
+.hub-dot { width: 7px; height: 7px; border-radius: 50%; }
+.hub-prep-label { font-size: 10px; color: var(--text-3); margin-left: 4px; font-family: var(--font-mono); }
+
+.hub-col-arrow { font-size: 16px; color: var(--text-3); text-align: right; }
