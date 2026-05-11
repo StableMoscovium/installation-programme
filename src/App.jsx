@@ -39,6 +39,7 @@ export default function App() {
 
     if (error) {
       console.error('Save failed:', error)
+      alert(`Save failed: ${error.message}`)
       return
     }
 
@@ -63,6 +64,7 @@ export default function App() {
 
     if (error) {
       console.error('Delete failed:', error)
+      alert(`Delete failed: ${error.message}`)
       return
     }
 
@@ -77,6 +79,7 @@ export default function App() {
       .update({ milestone, updated_at: new Date().toISOString() })
       .eq('proj_num', projNum)
 
+    if (error) { console.error('Milestone update failed:', error); alert(`Milestone update failed: ${error.message}`); return }
     if (!error) {
       setProjects(prev => prev.map(p =>
         p.projNum === projNum ? { ...p, milestone } : p
@@ -91,6 +94,7 @@ export default function App() {
       .update({ on_hold: onHold, updated_at: new Date().toISOString() })
       .eq('proj_num', projNum)
 
+    if (error) { console.error('Hold update failed:', error); alert(`Hold update failed: ${error.message}`); return }
     if (!error) {
       setProjects(prev => prev.map(p =>
         p.projNum === projNum ? { ...p, onHold } : p
@@ -115,6 +119,7 @@ export default function App() {
 
     if (error) {
       console.error('Prep update failed:', error)
+      alert(`Prep update failed: ${error.message}`)
       return
     }
 
