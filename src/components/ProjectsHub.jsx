@@ -49,10 +49,11 @@ function ShipTrack({ project }) {
     trackColor = 'var(--green)'
   } else {
     const d = status.daysUntil
-    progress   = Math.max(0.05, Math.min(0.82, 1 - d / 90))
+    // Bar stays empty beyond 21 days, then ramps up through the monitoring window
+    progress   = d >= 21 ? 0.03 : 0.03 + ((21 - d) / 21) * 0.82
     arrived    = false
-    label      = d === 1 ? 'Tomorrow' : d <= 30 ? `${d}d away` : fmtShort(status.start)
-    trackColor = d <= 7 ? 'var(--amber)' : 'var(--blue)'
+    label      = d === 1 ? 'Tomorrow' : d <= 21 ? `${d}d away` : fmtShort(status.start)
+    trackColor = d <= 7 ? 'var(--amber)' : d <= 21 ? 'var(--blue)' : 'var(--text-3)'
   }
 
   const pct = `${(progress * 100).toFixed(1)}%`
