@@ -42,6 +42,18 @@ export const PROJECT_COLOURS = [
   { key: 'm-coral',  bg: '#FAECE7', border: '#993C1D', num: '#993C1D', text: '#4A1B0C', dotOn: '#993C1D', dotOff: '#F5C4B3' },
 ]
 
+export const MILESTONES = [
+  { key: 'acknowledged',       short: 'Acknowledged',   label: 'Project Acknowledged' },
+  { key: 'kit_order',          short: 'Kit Order',      label: 'Kit Order Placed' },
+  { key: 'design',             short: 'Design',         label: 'Crane Design' },
+  { key: 'drawings',           short: 'Drawings',       label: 'Detailed Drawings' },
+  { key: 'fabrication',        short: 'Fabrication',    label: 'Structural Fabrication' },
+  { key: 'structural_install', short: 'Struct. Install',label: 'Structural Install' },
+  { key: 'crane_fitout',       short: 'Crane Fit Out',  label: 'Crane Fit Out' },
+  { key: 'crane_install',      short: 'Crane Install',  label: 'Crane Install' },
+  { key: 'handover',           short: 'Handover',       label: 'Handover' },
+]
+
 export const REGIONS = [
   'Auckland',
   'Bay of Plenty',

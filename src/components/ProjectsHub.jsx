@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PREP_STAGES, MON_NAMES, parseDate } from '../lib/constants'
+import { PREP_STAGES, MILESTONES, MON_NAMES, parseDate } from '../lib/constants'
 
 const TODAY = new Date()
 TODAY.setHours(0, 0, 0, 0)
@@ -110,8 +110,33 @@ function getStats(projects) {
   return { onSite, soon, fullyPrepped, nextProject, nextDays }
 }
 
+/* ── Milestone bar ── */
+function MilestoneBar({ milestone, projNum, onUpdateMilestone }) {
+  return (
+    <div className="milestone-bar" onClick={e => e.stopPropagation()}>
+      {MILESTONES.map((m, i) => {
+        const complete = milestone > i
+        const current  = milestone === i
+        return (
+          <div key={m.key} className="milestone-step">
+            {i > 0 && <div className={`milestone-seg${complete ? ' complete' : ''}`} />}
+            <div
+              className={`milestone-node${complete ? ' complete' : current ? ' current' : ''}`}
+              onClick={() => onUpdateMilestone(projNum, milestone === i + 1 ? i : i + 1)}
+              title={m.label}
+            >
+              <div className="milestone-dot" />
+              <div className="milestone-lbl">{m.short}</div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 /* ── Main component ── */
-export default function ProjectsHub({ projects, onOpenProject }) {
+export default function ProjectsHub({ projects, onOpenProject, onUpdateMilestone }) {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('nextMob')
 
@@ -244,38 +269,49 @@ export default function ProjectsHub({ projects, onOpenProject }) {
               style={{ borderLeftColor: c.border || 'var(--border-md)' }}
               onClick={() => onOpenProject(project)}
             >
-              {/* Left: project identity */}
-              <div className="hub-col-identity">
-                <div className="hub-proj-num" style={{ color: c.num || 'var(--blue)' }}>
-                  {project.projNum}
+              {/* Main row */}
+              <div className="hub-row-main">
+                {/* Left: project identity */}
+                <div className="hub-col-identity">
+                  <div className="hub-proj-num" style={{ color: c.num || 'var(--blue)' }}>
+                    {project.projNum}
+                  </div>
+                  <div className="hub-proj-name">{project.projName}</div>
+                  <div className="hub-proj-meta">
+                    {project.client && <span>{project.client}</span>}
+                    {project.client && project.region && <span className="hub-sep">·</span>}
+                    {project.region && <span>{project.region}</span>}
+                  </div>
                 </div>
-                <div className="hub-proj-name">{project.projName}</div>
-                <div className="hub-proj-meta">
-                  {project.client && <span>{project.client}</span>}
-                  {project.client && project.region && <span className="hub-sep">·</span>}
-                  {project.region && <span>{project.region}</span>}
+
+                {/* Centre: next mob + status badge */}
+                <div className="hub-col-mob">
+                  <div className="hub-mob-line">
+                    {statusBadge}
+                    <span className="hub-mob-label">{mobLabel}</span>
+                  </div>
+                  <div className="hub-mob-count">{mobCount} mob{mobCount !== 1 ? 's' : ''}</div>
                 </div>
-              </div>
 
-              {/* Centre: next mob + status badge */}
-              <div className="hub-col-mob">
-                <div className="hub-mob-line">
-                  {statusBadge}
-                  <span className="hub-mob-label">{mobLabel}</span>
+                {/* Ship track */}
+                <div className="hub-col-track">
+                  <ShipTrack project={project} />
                 </div>
-                <div className="hub-mob-count">{mobCount} mob{mobCount !== 1 ? 's' : ''}</div>
+
+                {/* Prep dots */}
+                <div className="hub-col-prep">
+                  <PrepDots prep={minPrep} />
+                </div>
+
+                <div className="hub-col-arrow">›</div>
               </div>
 
-              {/* Right: ship + prep */}
-              <div className="hub-col-track">
-                <ShipTrack project={project} />
-              </div>
-
-              <div className="hub-col-prep">
-                <PrepDots prep={minPrep} />
-              </div>
-
-              <div className="hub-col-arrow">›</div>
+              {/* Milestone bar — full width */}
+              <MilestoneBar
+                milestone={project.milestone ?? 0}
+                projNum={project.projNum}
+                onUpdateMilestone={onUpdateMilestone}
+              />
             </div>
           )
         })}

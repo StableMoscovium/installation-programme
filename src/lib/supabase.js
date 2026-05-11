@@ -21,6 +21,7 @@ export function toDb(project) {
     hs_notes: project.hsNotes,
     gen_notes: project.genNotes,
     colour: project.colour,
+    milestone: project.milestone ?? 0,
     updated_at: new Date().toISOString(),
   }
 }
@@ -41,6 +42,7 @@ export function fromDb(row) {
     hsNotes: row.hs_notes,
     genNotes: row.gen_notes,
     colour: row.colour,
+    milestone: row.milestone ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }

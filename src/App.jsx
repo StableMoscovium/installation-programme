@@ -71,6 +71,19 @@ export default function App() {
     setActiveTab('calendar')
   }
 
+  async function updateMilestone(projNum, milestone) {
+    const { error } = await supabase
+      .from('projects')
+      .update({ milestone, updated_at: new Date().toISOString() })
+      .eq('proj_num', projNum)
+
+    if (!error) {
+      setProjects(prev => prev.map(p =>
+        p.projNum === projNum ? { ...p, milestone } : p
+      ))
+    }
+  }
+
   async function updatePrep(projNum, mobKey, prep) {
     const project = projects.find(p => p.projNum === projNum)
     if (!project) return
@@ -159,6 +172,7 @@ export default function App() {
           <ProjectsHub
             projects={projects}
             onOpenProject={openProject}
+            onUpdateMilestone={updateMilestone}
           />
         )}
         {!loading && !error && activeTab === 'calendar' && (
