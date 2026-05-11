@@ -53,89 +53,12 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
         </div>
       </div>
 
-      <div className="detail-two-col">
-        {/* MOBILISATIONS — each with its own prep status */}
-        <div className="detail-card">
-          <h3 className="detail-card-title">Mobilisations</h3>
-          {mobs.map(([key, mob], i) => {
-            const mobPrep = mob.prep || 0
-            return (
-              <div key={key} className="mob-detail-block">
-                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                  {/* Mob info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="mob-detail-header">
-                      <span className="mob-detail-label">MOB-{i + 1}</span>
-                      <span className="mob-detail-phase">{mob.phase}</span>
-                      {mob.start && mob.end && (
-                        <span className="mob-detail-dates">{formatDateRange(mob.start, mob.end)}</span>
-                      )}
-                    </div>
-                    {mob.tasks.length > 0 && (
-                      <ul className="mob-task-list">
-                        {mob.tasks.map(t => (
-                          <li key={t} className="mob-task-item">
-                            <span className="task-dot">·</span> {t}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {Object.keys(mob.days || {}).length > 0 && (
-                      <div className="mob-equip-summary">
-                        {Object.entries(mob.days).map(([iso, codes]) => {
-                          if (!codes.length) return null
-                          const d = parseDate(iso)
-                          return (
-                            <div key={iso} className="mob-equip-day">
-                              <span className="mob-equip-day-label">
-                                {DAY_NAMES[d.getDay()]} {d.getDate()} {MON_NAMES[d.getMonth()]}
-                              </span>
-                              <div className="mob-equip-chips">
-                                {codes.map(code => {
-                                  const e = EQ_MAP[code]
-                                  return e
-                                    ? <span key={code} className="eq-chip-sm" style={{ background: e.bg, color: e.col }}>{e.label}</span>
-                                    : null
-                                })}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Prep status for this mob */}
-                  <div style={{ width: 220, flexShrink: 0 }}>
-                    <div className="prep-stage-list">
-                      {PREP_STAGES.map((stage, si) => {
-                        const done = mobPrep > si
-                        const active = mobPrep === si
-                        return (
-                          <div
-                            key={stage.key}
-                            className={`prep-stage-row${done ? ' done' : active ? ' active' : ''}`}
-                            onClick={() => handlePrepToggle(key, mobPrep, si)}
-                          >
-                            <div className={`prep-stage-num${done ? ' done' : active ? ' active' : ''}`}>{si + 1}</div>
-                            <div className={`prep-stage-label${done ? ' done' : ''}`}>{stage.label.replace(/^\d · /, '')}</div>
-                            <div className="prep-stage-status">{done ? '✓' : active ? '⏳' : ''}</div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* CONTACTS */}
-        <div className="detail-card">
-          <h3 className="detail-card-title">Contacts</h3>
+      {/* CONTACTS — full width, horizontal grid */}
+      <div className="detail-card" style={{ marginBottom: 12 }}>
+        <h3 className="detail-card-title">Contacts</h3>
+        <div className="detail-contacts-grid">
           {(project.contacts || []).filter(c => c.name || c.role).map((c, i) => (
-            <div key={i} className="contact-detail-row">
+            <div key={i} className="contact-detail-row" style={{ borderBottom: 'none', padding: '6px 0' }}>
               <div className="contact-avatar" style={{ background: project.colour?.bg, color: project.colour?.num }}>
                 {(c.name || c.role || '?')[0].toUpperCase()}
               </div>
@@ -151,6 +74,85 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
           ))}
         </div>
       </div>
+
+      {/* MOBILISATIONS — each as its own full-width card */}
+      {mobs.map(([key, mob], i) => {
+        const mobPrep = mob.prep || 0
+        return (
+          <div key={key} className="detail-card detail-mob-card">
+            <div className="detail-mob-split">
+
+              {/* Left — mob info */}
+              <div className="detail-mob-left">
+                <div className="mob-detail-header">
+                  <span className="mob-detail-label">MOB-{i + 1}</span>
+                  <span className="mob-detail-phase">{mob.phase}</span>
+                  {mob.start && mob.end && (
+                    <span className="mob-detail-dates">{formatDateRange(mob.start, mob.end)}</span>
+                  )}
+                </div>
+                {mob.tasks.length > 0 && (
+                  <ul className="mob-task-list">
+                    {mob.tasks.map(t => (
+                      <li key={t} className="mob-task-item">
+                        <span className="task-dot">·</span> {t}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {Object.keys(mob.days || {}).length > 0 && (
+                  <div className="mob-equip-summary">
+                    {Object.entries(mob.days).map(([iso, codes]) => {
+                      if (!codes.length) return null
+                      const d = parseDate(iso)
+                      return (
+                        <div key={iso} className="mob-equip-day">
+                          <span className="mob-equip-day-label">
+                            {DAY_NAMES[d.getDay()]} {d.getDate()} {MON_NAMES[d.getMonth()]}
+                          </span>
+                          <div className="mob-equip-chips">
+                            {codes.map(code => {
+                              const e = EQ_MAP[code]
+                              return e
+                                ? <span key={code} className="eq-chip-sm" style={{ background: e.bg, color: e.col }}>{e.label}</span>
+                                : null
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="detail-mob-divider" />
+
+              {/* Right — prep status */}
+              <div className="detail-mob-right">
+                <div className="prep-stage-list">
+                  {PREP_STAGES.map((stage, si) => {
+                    const done   = mobPrep > si
+                    const active = mobPrep === si
+                    return (
+                      <div
+                        key={stage.key}
+                        className={`prep-stage-row${done ? ' done' : active ? ' active' : ''}`}
+                        onClick={() => handlePrepToggle(key, mobPrep, si)}
+                      >
+                        <div className={`prep-stage-num${done ? ' done' : active ? ' active' : ''}`}>{si + 1}</div>
+                        <div className={`prep-stage-label${done ? ' done' : ''}`}>{stage.label.replace(/^\d · /, '')}</div>
+                        <div className="prep-stage-status">{done ? '✓' : active ? '⏳' : ''}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )
+      })}
 
       {/* NOTES */}
       {(project.accessNotes || project.hsNotes || project.genNotes || project.scope) && (
