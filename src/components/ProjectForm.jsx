@@ -206,26 +206,23 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
         </div>
       </section>
 
-      {/* CONTACTS + empty space */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-        <section className="form-section">
-          <h3 className="section-heading">Contacts</h3>
-          <div className="contact-header">
-            <div>Role</div><div>Name</div><div>Phone</div><div>Email</div><div></div>
+      {/* CONTACTS */}
+      <section className="form-section">
+        <h3 className="section-heading">Contacts</h3>
+        <div className="contact-header">
+          <div>Role</div><div>Name</div><div>Phone</div><div>Email</div><div></div>
+        </div>
+        {contacts.map((c, i) => (
+          <div key={i} className="contact-row">
+            <input value={c.role}  onChange={e => updateContact(i, 'role',  e.target.value)} placeholder="Role" />
+            <input value={c.name}  onChange={e => updateContact(i, 'name',  e.target.value)} placeholder="Full name" />
+            <input value={c.phone} onChange={e => updateContact(i, 'phone', e.target.value)} placeholder="+64" type="tel" />
+            <input value={c.email} onChange={e => updateContact(i, 'email', e.target.value)} placeholder="email@" type="email" />
+            <button className="remove-btn" onClick={() => removeContact(i)} title="Remove">×</button>
           </div>
-          {contacts.map((c, i) => (
-            <div key={i} className="contact-row">
-              <input value={c.role}  onChange={e => updateContact(i, 'role',  e.target.value)} placeholder="Role" />
-              <input value={c.name}  onChange={e => updateContact(i, 'name',  e.target.value)} placeholder="Full name" />
-              <input value={c.phone} onChange={e => updateContact(i, 'phone', e.target.value)} placeholder="+64" type="tel" />
-              <input value={c.email} onChange={e => updateContact(i, 'email', e.target.value)} placeholder="email@" type="email" />
-              <button className="remove-btn" onClick={() => removeContact(i)} title="Remove">×</button>
-            </div>
-          ))}
-          <button className="add-link" onClick={addContact}>+ Add contact</button>
-        </section>
-        <div>{/* reserved for shortcut buttons */}</div>
-      </div>
+        ))}
+        <button className="add-link" onClick={addContact}>+ Add contact</button>
+      </section>
 
       {/* MOBILISATIONS — each with prep status alongside */}
       <section className="form-section">
