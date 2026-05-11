@@ -70,10 +70,18 @@ export default function App() {
     setActiveTab('calendar')
   }
 
-  async function updatePrep(projNum, prep) {
+  async function updatePrep(projNum, mobKey, prep) {
+    const project = projects.find(p => p.projNum === projNum)
+    if (!project) return
+
+    const updatedMobs = {
+      ...project.mobs,
+      [mobKey]: { ...project.mobs[mobKey], prep },
+    }
+
     const { error } = await supabase
       .from('projects')
-      .update({ prep, updated_at: new Date().toISOString() })
+      .update({ mobs: updatedMobs, updated_at: new Date().toISOString() })
       .eq('proj_num', projNum)
 
     if (error) {
@@ -81,8 +89,10 @@ export default function App() {
       return
     }
 
-    setProjects(prev => prev.map(p => p.projNum === projNum ? { ...p, prep } : p))
-    setSelectedProject(prev => ({ ...prev, prep }))
+    setProjects(prev => prev.map(p =>
+      p.projNum === projNum ? { ...p, mobs: updatedMobs } : p
+    ))
+    setSelectedProject(prev => prev ? { ...prev, mobs: updatedMobs } : null)
   }
 
   function openProject(proj) {
@@ -157,7 +167,7 @@ export default function App() {
             onBack={() => { setActiveTab('calendar'); setSelectedProject(null) }}
             onEdit={() => editProject(selectedProject)}
             onDelete={() => deleteProject(selectedProject.projNum)}
-            onUpdatePrep={(projNum, prep) => updatePrep(projNum, prep)}
+            onUpdatePrep={(mobKey, prep) => updatePrep(selectedProject.projNum, mobKey, prep)}
           />
         )}
         {!loading && activeTab === 'report' && (

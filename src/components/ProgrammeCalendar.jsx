@@ -130,7 +130,7 @@ function MobCard({ proj, mob, iso, onClick }) {
           <div
             key={i}
             className="dot"
-            style={{ background: i < (proj.prep || 0) ? colour.dotOn : colour.dotOff }}
+            style={{ background: i < (mob.prep || 0) ? colour.dotOn : colour.dotOff }}
           />
         ))}
       </div>

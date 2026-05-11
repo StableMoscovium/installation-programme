@@ -5,14 +5,16 @@ import {
   fmtDate, parseDate, addDays, daysBetween,
 } from '../lib/constants'
 
-const BLANK_CONTACT = () => ({ role: '', name: '', phone: '', email: '' })
 const BLANK_MOB = () => ({
   phase: 'Structural installation',
   start: '',
   end: '',
   tasks: [],
   days: {},
+  prep: 0,
 })
+
+const BLANK_CONTACT = () => ({ role: '', name: '', phone: '', email: '' })
 
 export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [projNum,   setProjNum]   = useState('')
@@ -29,7 +31,6 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     { role: 'Project sponsor',  name: '', phone: '', email: '' },
   ])
   const [mobs,      setMobs]      = useState([BLANK_MOB()])
-  const [prep,      setPrep]      = useState(0)
   const [accessNotes, setAccessNotes] = useState('')
   const [hsNotes,   setHsNotes]   = useState('')
   const [genNotes,  setGenNotes]  = useState('')
@@ -47,7 +48,6 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setScope(initialData.scope || '')
     setContacts(initialData.contacts || [BLANK_CONTACT()])
     setMobs(Object.values(initialData.mobs || { 0: BLANK_MOB() }))
-    setPrep(initialData.prep || 0)
     setAccessNotes(initialData.accessNotes || '')
     setHsNotes(initialData.hsNotes || '')
     setGenNotes(initialData.genNotes || '')
@@ -126,7 +126,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
       scope,
       contacts,
       mobs:        mobMap,
-      prep,
+      prep:        0,
       accessNotes,
       hsNotes,
       genNotes,
@@ -206,57 +206,64 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
         </div>
       </section>
 
-      {/* CONTACTS */}
-      <section className="form-section">
-        <h3 className="section-heading">Contacts</h3>
-        <div className="contact-header">
-          <div>Role</div><div>Name</div><div>Phone</div><div>Email</div><div></div>
-        </div>
-        {contacts.map((c, i) => (
-          <div key={i} className="contact-row">
-            <input value={c.role}  onChange={e => updateContact(i, 'role',  e.target.value)} placeholder="Role" />
-            <input value={c.name}  onChange={e => updateContact(i, 'name',  e.target.value)} placeholder="Full name" />
-            <input value={c.phone} onChange={e => updateContact(i, 'phone', e.target.value)} placeholder="+64" type="tel" />
-            <input value={c.email} onChange={e => updateContact(i, 'email', e.target.value)} placeholder="email@" type="email" />
-            <button className="remove-btn" onClick={() => removeContact(i)} title="Remove">×</button>
+      {/* CONTACTS + empty space */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <section className="form-section">
+          <h3 className="section-heading">Contacts</h3>
+          <div className="contact-header">
+            <div>Role</div><div>Name</div><div>Phone</div><div>Email</div><div></div>
           </div>
-        ))}
-        <button className="add-link" onClick={addContact}>+ Add contact</button>
-      </section>
+          {contacts.map((c, i) => (
+            <div key={i} className="contact-row">
+              <input value={c.role}  onChange={e => updateContact(i, 'role',  e.target.value)} placeholder="Role" />
+              <input value={c.name}  onChange={e => updateContact(i, 'name',  e.target.value)} placeholder="Full name" />
+              <input value={c.phone} onChange={e => updateContact(i, 'phone', e.target.value)} placeholder="+64" type="tel" />
+              <input value={c.email} onChange={e => updateContact(i, 'email', e.target.value)} placeholder="email@" type="email" />
+              <button className="remove-btn" onClick={() => removeContact(i)} title="Remove">×</button>
+            </div>
+          ))}
+          <button className="add-link" onClick={addContact}>+ Add contact</button>
+        </section>
+        <div>{/* reserved for shortcut buttons */}</div>
+      </div>
 
-      {/* MOBILISATIONS */}
+      {/* MOBILISATIONS — each with prep status alongside */}
       <section className="form-section">
         <h3 className="section-heading">Mobilisations</h3>
         {mobs.map((mob, mi) => (
-          <MobBlock
-            key={mi}
-            mob={mob}
-            mobIndex={mi}
-            onUpdate={(field, val) => updateMob(mi, field, val)}
-            onToggleTask={task => toggleTask(mi, task)}
-            onAddCustomTask={() => addCustomTask(mi)}
-            onToggleEquip={(iso, code) => toggleEquip(mi, iso, code)}
-            onRemove={mobs.length > 1 ? () => removeMob(mi) : null}
-          />
+          <div key={mi} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 16 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <MobBlock
+                mob={mob}
+                mobIndex={mi}
+                onUpdate={(field, val) => updateMob(mi, field, val)}
+                onToggleTask={task => toggleTask(mi, task)}
+                onAddCustomTask={() => addCustomTask(mi)}
+                onToggleEquip={(iso, code) => toggleEquip(mi, iso, code)}
+                onRemove={mobs.length > 1 ? () => removeMob(mi) : null}
+              />
+            </div>
+            <div style={{ width: 220, flexShrink: 0, paddingTop: 4 }}>
+              <div className="mob-block" style={{ padding: '12px 14px' }}>
+                <div className="field-sub-label" style={{ marginBottom: 8 }}>Prep status</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {PREP_STAGES.map((stage, i) => (
+                    <button
+                      key={stage.key}
+                      type="button"
+                      className={`prep-chip ${stage.cls}${(mob.prep || 0) > i ? ' on' : ''}`}
+                      onClick={() => updateMob(mi, 'prep', (mob.prep || 0) > i ? i : i + 1)}
+                      style={{ textAlign: 'left', width: '100%' }}
+                    >
+                      {stage.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         ))}
         <button className="add-link" onClick={addMob}>+ Add mobilisation</button>
-      </section>
-
-      {/* PREP STATUS */}
-      <section className="form-section">
-        <h3 className="section-heading">Prep status</h3>
-        <p className="section-sub">Mark off each stage as completed — drives the dot indicators on the calendar.</p>
-        <div className="prep-chips">
-          {PREP_STAGES.map((stage, i) => (
-            <button
-              key={stage.key}
-              className={`prep-chip ${stage.cls}${prep > i ? ' on' : ''}`}
-              onClick={() => setPrep(prep > i ? i : i + 1)}
-            >
-              {stage.label}
-            </button>
-          ))}
-        </div>
       </section>
 
       {/* NOTES */}
