@@ -63,7 +63,6 @@ function ShipTrack({ project }) {
         <div className="ship-track-rail" />
         <div className="ship-track-fill" style={{ width: pct, background: trackColor }} />
         <div className="ship-track-dot-end" style={{ background: arrived ? trackColor : 'var(--border-md)' }} />
-        <div className="ship-icon" style={{ left: pct }}>🚢</div>
       </div>
       <span className="ship-label" style={{ color: trackColor }}>{label}</span>
     </div>
