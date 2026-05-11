@@ -36,6 +36,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [genNotes,  setGenNotes]  = useState('')
   const [colour,    setColour]    = useState(PROJECT_COLOURS[0])
   const [milestone, setMilestone] = useState(0)
+  const [onHold,    setOnHold]    = useState(false)
 
   // Load existing project data for editing
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setGenNotes(initialData.genNotes || '')
     setColour(initialData.colour || PROJECT_COLOURS[0])
     setMilestone(initialData.milestone ?? 0)
+    setOnHold(initialData.onHold ?? false)
   }, [initialData])
 
   function updateContact(i, field, val) {
@@ -134,6 +136,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
       genNotes,
       colour,
       milestone,
+      onHold,
       createdAt:   initialData?.createdAt || new Date().toISOString(),
       updatedAt:   new Date().toISOString(),
     })

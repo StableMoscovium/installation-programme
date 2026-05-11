@@ -594,6 +594,12 @@ textarea { resize: vertical; line-height: 1.5; }
 
 .hub-col-arrow { font-size: 16px; color: var(--text-3); text-align: right; }
 
+.hub-badge.on-hold { background: #f0f0ee; color: var(--text-3); }
+
+/* On-hold row */
+.hub-row.on-hold { opacity: 0.45; filter: grayscale(0.6); }
+.hub-row.on-hold:hover { opacity: 0.65; }
+
 /* ── MILESTONE BAR ── */
 .milestone-bar {
   display: flex;
@@ -657,3 +663,56 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .milestone-node.complete .milestone-lbl { color: var(--blue); font-weight: 500; }
 .milestone-node.current  .milestone-lbl { color: var(--blue); font-weight: 600; }
+
+/* ── HOLD BUTTON ── */
+.btn-hold        { background: transparent; color: var(--text-2); border-color: var(--border-md); }
+.btn-hold:hover  { background: var(--amber-light); color: var(--amber); border-color: var(--amber); }
+.btn-hold-active { background: var(--amber-light); color: var(--amber); border-color: var(--amber); font-weight: 500; }
+.btn-hold-active:hover { background: #fce4b8; }
+
+/* ── LIFECYCLE CARD ── */
+.lifecycle-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+  padding-bottom: 10px; border-bottom: 0.5px solid var(--border);
+}
+.lifecycle-hold-badge {
+  font-size: 11px; font-weight: 500; color: var(--amber);
+  background: var(--amber-light); padding: 2px 10px; border-radius: 10px;
+}
+
+.lifecycle-list { display: flex; flex-direction: column; }
+
+.lifecycle-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 8px; border-radius: var(--radius-sm);
+  border-bottom: 0.5px solid var(--border);
+  transition: background 0.1s;
+}
+.lifecycle-row:last-child { border-bottom: none; }
+.lifecycle-row.complete { cursor: pointer; }
+.lifecycle-row.complete:hover { background: var(--bg); }
+.lifecycle-row.current  { background: var(--blue-light); border-radius: var(--radius-sm); cursor: default; }
+.lifecycle-row.next     { cursor: pointer; }
+.lifecycle-row.next:hover { background: var(--bg); }
+.lifecycle-row.locked   { opacity: 0.4; cursor: not-allowed; }
+
+.lifecycle-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; flex-shrink: 0;
+  background: var(--bg); color: var(--text-3);
+  border: 0.5px solid var(--border-md);
+}
+.lifecycle-num.complete { background: var(--green); color: #fff; border-color: var(--green); }
+.lifecycle-num.current  { background: var(--blue);  color: #fff; border-color: var(--blue); }
+
+.lifecycle-label { font-size: 13px; color: var(--text-1); flex: 1; }
+.lifecycle-row.complete .lifecycle-label { color: var(--text-3); text-decoration: line-through; }
+
+.lifecycle-action {}
+.lifecycle-tag {
+  font-size: 11px; padding: 2px 9px; border-radius: 10px; font-weight: 500;
+}
+.lifecycle-tag.done    { color: var(--green); background: var(--green-light); }
+.lifecycle-tag.current { color: var(--blue);  background: var(--blue-light); }
+.lifecycle-tag.next    { color: var(--text-2); background: var(--bg); border: 0.5px solid var(--border-md); }

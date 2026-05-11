@@ -81,6 +81,21 @@ export default function App() {
       setProjects(prev => prev.map(p =>
         p.projNum === projNum ? { ...p, milestone } : p
       ))
+      setSelectedProject(prev => prev ? { ...prev, milestone } : null)
+    }
+  }
+
+  async function updateHold(projNum, onHold) {
+    const { error } = await supabase
+      .from('projects')
+      .update({ on_hold: onHold, updated_at: new Date().toISOString() })
+      .eq('proj_num', projNum)
+
+    if (!error) {
+      setProjects(prev => prev.map(p =>
+        p.projNum === projNum ? { ...p, onHold } : p
+      ))
+      setSelectedProject(prev => prev ? { ...prev, onHold } : null)
     }
   }
 
@@ -195,6 +210,8 @@ export default function App() {
             onEdit={() => editProject(selectedProject)}
             onDelete={() => deleteProject(selectedProject.projNum)}
             onUpdatePrep={(mobKey, prep) => updatePrep(selectedProject.projNum, mobKey, prep)}
+            onUpdateMilestone={(milestone) => updateMilestone(selectedProject.projNum, milestone)}
+            onUpdateHold={(onHold) => updateHold(selectedProject.projNum, onHold)}
           />
         )}
         {!loading && activeTab === 'report' && (

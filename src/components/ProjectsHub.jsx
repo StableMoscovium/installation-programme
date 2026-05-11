@@ -110,10 +110,10 @@ function getStats(projects) {
   return { onSite, soon, fullyPrepped, nextProject, nextDays }
 }
 
-/* ── Milestone bar ── */
-function MilestoneBar({ milestone, projNum, onUpdateMilestone }) {
+/* ── Milestone bar (display only in hub) ── */
+function MilestoneBar({ milestone }) {
   return (
-    <div className="milestone-bar" onClick={e => e.stopPropagation()}>
+    <div className="milestone-bar">
       {MILESTONES.map((m, i) => {
         const complete = milestone > i
         const current  = milestone === i
@@ -122,8 +122,8 @@ function MilestoneBar({ milestone, projNum, onUpdateMilestone }) {
             {i > 0 && <div className={`milestone-seg${complete ? ' complete' : ''}`} />}
             <div
               className={`milestone-node${complete ? ' complete' : current ? ' current' : ''}`}
-              onClick={() => onUpdateMilestone(projNum, milestone === i + 1 ? i : i + 1)}
               title={m.label}
+              style={{ cursor: 'default' }}
             >
               <div className="milestone-dot" />
               <div className="milestone-lbl">{m.short}</div>
@@ -136,7 +136,7 @@ function MilestoneBar({ milestone, projNum, onUpdateMilestone }) {
 }
 
 /* ── Main component ── */
-export default function ProjectsHub({ projects, onOpenProject, onUpdateMilestone }) {
+export default function ProjectsHub({ projects, onOpenProject }) {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('nextMob')
 
@@ -245,8 +245,10 @@ export default function ProjectsHub({ projects, onOpenProject, onUpdateMilestone
           const c        = project.colour || {}
 
           let mobLabel = '—'
-          let statusBadge = null
-          if (entry) {
+          let statusBadge = project.onHold
+            ? <span className="hub-badge on-hold">⏸ On Hold</span>
+            : null
+          if (!project.onHold && entry) {
             const { status, mob } = entry
             if (status.type === 'active') {
               mobLabel = `${mob.phase} · until ${fmtShort(status.end)}`
@@ -265,7 +267,7 @@ export default function ProjectsHub({ projects, onOpenProject, onUpdateMilestone
           return (
             <div
               key={project.projNum}
-              className="hub-row"
+              className={`hub-row${project.onHold ? ' on-hold' : ''}`}
               style={{ borderLeftColor: c.border || 'var(--border-md)' }}
               onClick={() => onOpenProject(project)}
             >
@@ -306,12 +308,8 @@ export default function ProjectsHub({ projects, onOpenProject, onUpdateMilestone
                 <div className="hub-col-arrow">›</div>
               </div>
 
-              {/* Milestone bar — full width */}
-              <MilestoneBar
-                milestone={project.milestone ?? 0}
-                projNum={project.projNum}
-                onUpdateMilestone={onUpdateMilestone}
-              />
+              {/* Milestone bar — display only */}
+              <MilestoneBar milestone={project.milestone ?? 0} />
             </div>
           )
         })}

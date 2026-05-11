@@ -1,6 +1,6 @@
-import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate } from '../lib/constants'
+import { PREP_STAGES, MILESTONES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate } from '../lib/constants'
 
-export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep }) {
+export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateHold }) {
   const mobs = Object.entries(project.mobs || {})
 
   function handlePrepToggle(mobKey, currentPrep, stageIndex) {
@@ -26,6 +26,12 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
           )}
         </div>
         <div className="detail-header-actions">
+          <button
+            className={`btn ${project.onHold ? 'btn-hold-active' : 'btn-hold'}`}
+            onClick={() => onUpdateHold(!project.onHold)}
+          >
+            {project.onHold ? '▶ Resume project' : '⏸ Put on hold'}
+          </button>
           <button className="btn btn-ghost" onClick={onEdit}>Edit project</button>
           <button className="btn btn-danger" onClick={() => {
             if (window.confirm(`Delete project ${project.projNum} ${project.projName}?`)) onDelete()
@@ -72,6 +78,42 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* LIFECYCLE MILESTONES */}
+      <div className="detail-card" style={{ marginBottom: 12 }}>
+        <div className="lifecycle-header">
+          <h3 className="detail-card-title" style={{ marginBottom: 0 }}>Project Lifecycle</h3>
+          {project.onHold && (
+            <span className="lifecycle-hold-badge">⏸ On Hold</span>
+          )}
+        </div>
+        <div className="lifecycle-list">
+          {MILESTONES.map((m, i) => {
+            const complete = (project.milestone ?? 0) > i
+            const current  = (project.milestone ?? 0) === i
+            const isNext   = i === (project.milestone ?? 0) + 1
+            const locked   = i > (project.milestone ?? 0) + 1
+            return (
+              <div
+                key={m.key}
+                className={`lifecycle-row${complete ? ' complete' : current ? ' current' : locked ? ' locked' : ' next'}`}
+                onClick={() => !locked && onUpdateMilestone(i)}
+                title={locked ? 'Complete the current stage first' : m.label}
+              >
+                <div className={`lifecycle-num${complete ? ' complete' : current ? ' current' : ''}`}>
+                  {complete ? '✓' : i + 1}
+                </div>
+                <div className="lifecycle-label">{m.label}</div>
+                <div className="lifecycle-action">
+                  {complete && <span className="lifecycle-tag done">Done</span>}
+                  {current  && <span className="lifecycle-tag current">Current stage</span>}
+                  {isNext   && <span className="lifecycle-tag next">→ Advance to this</span>}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
