@@ -720,16 +720,7 @@ textarea { resize: vertical; line-height: 1.5; }
 .ms-node.complete .ms-lbl { color: var(--blue); font-weight: 500; }
 .ms-node.current  .ms-lbl { color: var(--blue); font-weight: 600; }
 
-/* First label — anchor from left edge of dot, no leftward overflow */
-.milestone-bar .ms-item:first-child .ms-lbl {
-  transform: none;
-  text-align: left;
-}
-/* Last label — anchor from right edge of dot, no rightward overflow */
-.milestone-bar .ms-item:last-child .ms-lbl {
-  transform: translateX(-100%) translateX(10px);
-  text-align: right;
-}
+/* First/last label anchoring handled via inline styles in MilestoneBar component */
 
 /* ── HOLD BUTTON ── */
 .btn-hold        { background: transparent; color: var(--text-2); border-color: var(--border-md); }
