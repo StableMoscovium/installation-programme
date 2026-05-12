@@ -7,10 +7,21 @@ import {
 
 const TODAY = new Date()
 
+function getMondayOf(date) {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = day === 0 ? -6 : 1 - day  // Sunday → back 6, otherwise back to Mon
+  d.setDate(d.getDate() + diff)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+const THIS_MONDAY = getMondayOf(TODAY)
+
 export default function ProgrammeCalendar({ projects, onOpenProject }) {
   const [offset, setOffset] = useState(0)
 
-  const start = addDays(TODAY, offset * 7)
+  const start = addDays(THIS_MONDAY, offset * 7)
   const days  = Array.from({ length: 21 }, (_, i) => addDays(start, i))
   const end   = days[20]
 
