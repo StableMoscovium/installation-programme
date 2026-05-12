@@ -225,16 +225,7 @@ function MilestoneBar({ project }) {
               title={m.label}
             >
               <div className="ms-dot" />
-              <div
-                className="ms-lbl"
-                style={
-                  i === 0
-                    ? { transform: 'none', textAlign: 'left' }          // left edge at card content edge
-                    : i === arr.length - 1
-                    ? { transform: 'translateX(-100%) translateX(10px)', textAlign: 'right' }  // right edge at dot right
-                    : undefined
-                }
-              >{m.short || m.label}</div>
+              <div className="ms-lbl">{m.short || m.label}</div>
             </div>
           </div>
         )

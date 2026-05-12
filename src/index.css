@@ -714,8 +714,8 @@ textarea { resize: vertical; line-height: 1.5; }
 .ms-lbl {
   font-size: 9px; color: var(--text-3);
   white-space: nowrap; line-height: 1;
-  text-align: center; margin-top: 4px;
-  transform: translateX(-50%) translateX(5px); /* centre on the dot */
+  text-align: left; margin-top: 4px;
+  transform: none;
 }
 .ms-node.complete .ms-lbl { color: var(--blue); font-weight: 500; }
 .ms-node.current  .ms-lbl { color: var(--blue); font-weight: 600; }
