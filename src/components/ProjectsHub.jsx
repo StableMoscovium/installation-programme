@@ -172,7 +172,7 @@ function KitTimeline({ kit }) {
               <div className="kit-tl-icon" style={{ left: `${prodProg * 100}%` }} title="Kit production">📦</div>
             )}
             <span className="kit-tl-seg-lbl" style={{ color: prodColor }}>
-              {prodDone ? 'Ready' : prodActive ? 'In production' : 'Production'}
+              {prodDone ? 'Ready for Transport' : prodActive ? 'Kit Production' : 'Kit Production'}
             </span>
           </div>
           <div className="kit-tl-node">
