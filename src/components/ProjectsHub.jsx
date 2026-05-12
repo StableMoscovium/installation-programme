@@ -224,7 +224,7 @@ function MilestoneBar({ project }) {
         {milestones.map((m, i, arr) => {
           const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
           return (
-            <div key={m.key || i} className="ms-item">
+            <div key={m.key || i} className={`ms-item${i === 0 ? ' ms-item-first' : ''}`}>
               {i > 0 && <div className={`ms-seg${m.done ? ' complete' : ''}`} />}
               <div
                 className={`ms-node${m.done ? ' complete' : isCurrent ? ' current' : ''}`}

@@ -681,7 +681,7 @@ textarea { resize: vertical; line-height: 1.5; }
   flex: 1;
   min-width: 0;
 }
-.ms-item:first-child { flex: 0 0 auto; }
+.ms-item-first { flex: 0 0 auto; }
 
 /* Segment fills all space before the node inside its item */
 .ms-seg {
