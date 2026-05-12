@@ -36,6 +36,9 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [hsNotes,   setHsNotes]   = useState('')
   const [genNotes,  setGenNotes]  = useState('')
   const [colour,    setColour]    = useState(PROJECT_COLOURS[0])
+  const [projectStart,   setProjectStart]   = useState('')
+  const [projectFinish,  setProjectFinish]  = useState('')
+  const [actualFinish,   setActualFinish]   = useState('')
   const [milestone,      setMilestone]      = useState(0)
   const [milestonesList, setMilestonesList] = useState(defaultMilestonesList())
   const [newMilestone,   setNewMilestone]   = useState('')
@@ -57,6 +60,9 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setHsNotes(initialData.hsNotes || '')
     setGenNotes(initialData.genNotes || '')
     setColour(initialData.colour || PROJECT_COLOURS[0])
+    setProjectStart(initialData.projectStart || '')
+    setProjectFinish(initialData.projectFinish || '')
+    setActualFinish(initialData.actualFinish || '')
     setMilestone(initialData.milestone ?? 0)
     setMilestonesList(
       initialData.milestonesList?.length > 0
@@ -143,6 +149,9 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
       hsNotes,
       genNotes,
       colour,
+      projectStart,
+      projectFinish,
+      actualFinish,
       milestone,
       milestonesList,
       onHold,
@@ -193,6 +202,18 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
           <div className="field span3">
             <label>Scope notes</label>
             <textarea value={scope} onChange={e => setScope(e.target.value)} placeholder="Brief description of overall scope…" rows={3} />
+          </div>
+          <div className="field">
+            <label>Project start</label>
+            <input type="date" value={projectStart} onChange={e => setProjectStart(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>Project finish</label>
+            <input type="date" value={projectFinish} onChange={e => setProjectFinish(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>Actual finish</label>
+            <input type="date" value={actualFinish} onChange={e => setActualFinish(e.target.value)} />
           </div>
           <div className="field span3">
             <label>Project colour</label>

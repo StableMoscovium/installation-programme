@@ -211,15 +211,32 @@ function KitTimeline({ kit }) {
 /* ── Milestone bar (display only in hub) ── */
 function MilestoneBar({ project }) {
   const milestones = getProjectMilestones(project)
-  const fmtD = d => `${d.getDate()} ${MON_NAMES[d.getMonth()]}`
-  const dateLabel = fmtD(TODAY) // placeholder — will link to project dates later
+  const fmtD = d => `${d.getDate()} ${MON_NAMES[d.getMonth()]} ${d.getFullYear()}`
+
+  // Left — project start date
+  const leftLabel = project.projectStart ? fmtD(parseDate(project.projectStart)) : fmtD(TODAY)
+  const leftColor = 'var(--text-3)'
+
+  // Right — actual finish (green) > project finish colour-coded > fallback today
+  let rightLabel, rightColor
+  if (project.actualFinish) {
+    rightLabel = fmtD(parseDate(project.actualFinish))
+    rightColor = 'var(--green)'
+  } else if (project.projectFinish) {
+    const finish = parseDate(project.projectFinish)
+    rightLabel = fmtD(finish)
+    rightColor = finish >= TODAY ? ORANGE : 'var(--red)'
+  } else {
+    rightLabel = fmtD(TODAY)
+    rightColor = 'var(--text-3)'
+  }
 
   return (
     <div className="bar-section">
       <span className="tl-section-label">Milestones</span>
       <div className="milestone-bar">
-        {/* Left date anchor */}
-        <div className="ms-date-anchor ms-date-left">{dateLabel}</div>
+        {/* Left date anchor — project start */}
+        <div className="ms-date-anchor ms-date-left" style={{ color: leftColor }}>{leftLabel}</div>
 
         {milestones.map((m, i, arr) => {
           const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
@@ -237,8 +254,8 @@ function MilestoneBar({ project }) {
           )
         })}
 
-        {/* Right date anchor */}
-        <div className="ms-date-anchor ms-date-right">{dateLabel}</div>
+        {/* Right date anchor — finish date, colour-coded */}
+        <div className="ms-date-anchor ms-date-right" style={{ color: rightColor, fontWeight: 500 }}>{rightLabel}</div>
       </div>
     </div>
   )
