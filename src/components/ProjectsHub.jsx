@@ -225,11 +225,13 @@ function MilestoneBar({ project }) {
               title={m.label}
             >
               <div className="ms-dot" />
-              <div className="ms-lbl">{m.short || m.label}</div>
             </div>
           </div>
         )
       })}
+      <span className="ms-count">
+        {milestones.filter(m => m.done).length}/{milestones.length}
+      </span>
       </div>
     </div>
   )

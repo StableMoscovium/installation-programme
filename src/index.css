@@ -694,14 +694,8 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .ms-seg.complete { background: var(--blue); }
 
-/* Node is the dot + label stacked */
-.ms-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: 10px; /* fixed width = dot width so label overflow doesn't affect layout */
-}
+/* Node is just the dot */
+.ms-node { display: flex; flex-shrink: 0; }
 
 .ms-dot {
   width: 10px; height: 10px; border-radius: 50%;
@@ -711,16 +705,10 @@ textarea { resize: vertical; line-height: 1.5; }
 .ms-node.complete .ms-dot { background: var(--blue); border-color: var(--blue); }
 .ms-node.current  .ms-dot { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
 
-.ms-lbl {
-  font-size: 9px; color: var(--text-3);
-  white-space: nowrap; line-height: 1;
-  text-align: left; margin-top: 4px;
-  transform: none;
+.ms-count {
+  font-size: 10px; color: var(--text-3); font-family: var(--font-mono);
+  margin-left: 8px; flex-shrink: 0; white-space: nowrap;
 }
-.ms-node.complete .ms-lbl { color: var(--blue); font-weight: 500; }
-.ms-node.current  .ms-lbl { color: var(--blue); font-weight: 600; }
-
-/* First/last label anchoring handled via inline styles in MilestoneBar component */
 
 /* ── HOLD BUTTON ── */
 .btn-hold        { background: transparent; color: var(--text-2); border-color: var(--border-md); }
