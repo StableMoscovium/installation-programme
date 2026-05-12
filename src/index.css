@@ -671,7 +671,7 @@ textarea { resize: vertical; line-height: 1.5; }
   display: flex;
   align-items: flex-start;
   cursor: default;
-  padding-bottom: 4px;
+  padding-bottom: 20px; /* room for absolutely-positioned labels below dots */
 }
 
 /* Each ms-item is: optional segment + node, and uses flex: 1 so items share space equally */
@@ -687,10 +687,11 @@ textarea { resize: vertical; line-height: 1.5; }
 .ms-seg {
   flex: 1;
   height: 2px;
-  margin-top: 4px; /* aligns with dot centre (dot is 10px, so 5px centre - 2px half-height = 4px offset) */
+  margin-top: 4px;
   background: var(--border);
   transition: background 0.2s;
   min-width: 8px;
+  align-self: flex-start;
 }
 .ms-seg.complete { background: var(--blue); }
 
@@ -703,32 +704,33 @@ textarea { resize: vertical; line-height: 1.5; }
 .ms-date-left  { margin-right: 8px; }
 .ms-date-right { margin-left: 8px; }
 
-/* Node is dot + label */
+/* Node — fixed 10px width so labels never affect segment spacing */
 .ms-node {
-  display: flex; flex-direction: column;
-  align-items: flex-start; flex-shrink: 0;
+  position: relative;
+  width: 10px; height: 10px;
+  flex-shrink: 0; flex-grow: 0;
 }
 
 .ms-dot {
   width: 10px; height: 10px; border-radius: 50%;
   background: var(--bg); border: 2px solid var(--border-md);
-  transition: all 0.15s; flex-shrink: 0;
+  transition: all 0.15s;
 }
 .ms-node.complete .ms-dot { background: var(--blue); border-color: var(--blue); }
 .ms-node.current  .ms-dot { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
 
+/* Label absolutely positioned below dot — doesn't affect flex layout */
 .ms-lbl {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 9px; color: var(--text-3);
   white-space: nowrap; line-height: 1;
-  margin-top: 4px;
+  pointer-events: none;
 }
 .ms-node.complete .ms-lbl { color: var(--blue); font-weight: 500; }
 .ms-node.current  .ms-lbl { color: var(--blue); font-weight: 600; }
-
-/* Last label — right-anchored to its dot */
-.ms-item:last-child .ms-lbl {
-  transform: translateX(-100%) translateX(10px);
-}
 
 /* ── HOLD BUTTON ── */
 .btn-hold        { background: transparent; color: var(--text-2); border-color: var(--border-md); }
