@@ -215,7 +215,6 @@ function MilestoneBar({ project }) {
 
   // Left — project start date
   const leftLabel = project.projectStart ? fmtD(parseDate(project.projectStart)) : fmtD(TODAY)
-  const leftColor = 'var(--text-3)'
 
   // Right — actual finish (green) > project finish colour-coded > fallback today
   let rightLabel, rightColor
@@ -230,6 +229,9 @@ function MilestoneBar({ project }) {
     rightLabel = fmtD(TODAY)
     rightColor = 'var(--text-3)'
   }
+
+  // Left colour matches right
+  const leftColor = rightColor
 
   return (
     <div className="bar-section">
