@@ -189,12 +189,12 @@ function KitTimeline({ kit }) {
             <div className="kit-tl-track" />
             <div className="kit-tl-fill" style={{ width: `${shipProg * 100}%`, background: shipColor }} />
             {!shipDone && (
-              <div className="kit-tl-icon" style={{ left: `${shipProg * 100}%` }} title="In transit">
+              <div className="kit-tl-icon" style={{ left: `${shipProg * 100}%` }} title="In Transit">
                 {shipIcon}
               </div>
             )}
             <span className="kit-tl-seg-lbl" style={{ color: shipColor }}>
-              {shipDone ? 'Arrived' : shipActive ? 'In transit' : 'Shipping'}
+              {shipDone ? 'Arrived' : shipActive ? 'In Transit' : 'Shipping'}
             </span>
           </div>
           <div className="kit-tl-node">
