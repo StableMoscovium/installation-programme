@@ -43,16 +43,16 @@ export const PROJECT_COLOURS = [
 ]
 
 export const MILESTONES = [
-  { key: 'kit_order',          short: 'Kit Order',      label: 'Kit Order Placed' },
-  { key: 'crane_design',       short: 'Design',         label: 'Crane Design' },
-  { key: 'drawings',           short: 'Drawings',       label: 'Detailed Drawings' },
-  { key: 'struct_fab',         short: 'Struct. Fab',    label: 'Structural Fabrication' },
-  { key: 'struct_install',     short: 'Struct. Install',label: 'Structural Install' },
-  { key: 'crane_production',   short: 'Crane Prod.',    label: 'Crane Production' },
-  { key: 'crane_install',      short: 'Crane Install',  label: 'Crane Install' },
-  { key: 'commissioning',      short: 'Commission',     label: 'Crane Commissioning' },
-  { key: 'load_test',          short: 'Load Test',      label: 'Load Test' },
-  { key: 'handover',           short: 'Hand Over',      label: 'Hand Over' },
+  { key: 'kit_order',        short: 'Kit Order',     label: 'Kit Order Confirmed' },
+  { key: 'design',           short: 'Design',        label: 'Design Finalised' },
+  { key: 'drawings',         short: 'GA Drawings',   label: 'GA Drawings Approved' },
+  { key: 'struct_fab',       short: 'Struct. Fab',   label: 'Structure Fabricated' },
+  { key: 'struct_install',   short: 'Struct. Install',label: 'Structure Installed' },
+  { key: 'crane_kitted',     short: 'Crane Kitted',  label: 'Crane Manufactured / Kitted' },
+  { key: 'crane_install',    short: 'Crane Install', label: 'Crane Installed' },
+  { key: 'commissioning',    short: 'Commissioned',  label: 'Crane Commissioned' },
+  { key: 'load_test',        short: 'Load Test',     label: 'Crane Load Tested' },
+  { key: 'handover',         short: 'Handover',      label: 'Crane Handed Over to Client' },
 ]
 
 // Returns the effective milestones array for a project,
