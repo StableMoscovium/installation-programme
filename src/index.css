@@ -600,6 +600,63 @@ textarea { resize: vertical; line-height: 1.5; }
 .hub-row.on-hold { opacity: 0.45; filter: grayscale(0.6); }
 .hub-row.on-hold:hover { opacity: 0.65; }
 
+/* ── KIT TIMELINE (hub) ── */
+.kit-timeline-wrap {
+  display: flex;
+  align-items: center;
+  padding: 10px 2px 6px;
+  border-top: 0.5px solid var(--border);
+  gap: 0;
+}
+
+.kit-tl-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.kit-tl-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  transition: background 0.2s;
+}
+.kit-tl-lbl {
+  font-size: 8px; color: var(--text-3); white-space: nowrap;
+  margin-top: 2px;
+}
+
+.kit-tl-seg {
+  position: relative;
+  height: 32px;
+  min-width: 30px;
+  display: flex;
+  align-items: center;
+}
+.kit-tl-track {
+  position: absolute; top: 50%; left: 0; right: 0;
+  height: 3px; background: var(--border);
+  transform: translateY(-50%); border-radius: 1.5px;
+}
+.kit-tl-fill {
+  position: absolute; top: 50%; left: 0;
+  height: 3px; border-radius: 1.5px;
+  transform: translateY(-50%);
+  transition: width 0.4s ease, background 0.3s;
+  max-width: 100%;
+}
+.kit-tl-icon {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15px; line-height: 1; user-select: none; z-index: 1;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+}
+.kit-tl-seg-lbl {
+  position: absolute; bottom: -1px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px; font-weight: 500; white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
 /* ── MILESTONE BAR ── */
 .milestone-bar {
   display: flex;

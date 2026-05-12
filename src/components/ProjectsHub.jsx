@@ -111,6 +111,92 @@ function getStats(projects) {
   return { onSite, soon, fullyPrepped, nextProject, nextDays }
 }
 
+/* ── Kit timeline ── */
+const ORANGE = '#E8830A'
+const GREEN  = '#0F6E56'
+const GREY   = '#D1D0CC'
+
+function daysDiff(a, b) { return Math.max(1, Math.round((b - a) / 86400000)) }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)) }
+
+function KitTimeline({ kit }) {
+  if (!kit?.kitProduction || !kit?.kitReady) return null
+
+  const prodStart = parseDate(kit.kitProduction)
+  const prodEnd   = parseDate(kit.kitReady)
+  const shipStart = kit.sent    ? parseDate(kit.sent)    : null
+  const shipEnd   = kit.arrived ? parseDate(kit.arrived) : null
+
+  const prodDays = daysDiff(prodStart, prodEnd)
+  const shipDays = shipStart && shipEnd ? daysDiff(shipStart, shipEnd) : 0
+  const totalDays = prodDays + shipDays
+
+  const prodFlex = prodDays / totalDays
+  const shipFlex = shipDays / totalDays
+
+  // Progress within each phase (0–1)
+  const prodDone   = TODAY >= prodEnd
+  const prodActive = TODAY >= prodStart && TODAY < prodEnd
+  const prodProg   = prodDone ? 1 : prodActive ? clamp((TODAY - prodStart) / (prodEnd - prodStart), 0, 1) : 0
+
+  const shipDone   = shipEnd && TODAY >= shipEnd
+  const shipActive = shipStart && shipEnd && TODAY >= shipStart && TODAY < shipEnd
+  const shipProg   = shipDone ? 1 : shipActive ? clamp((TODAY - shipStart) / (shipEnd - shipStart), 0, 1) : 0
+
+  const prodColor  = prodDone ? GREEN : prodActive ? ORANGE : GREY
+  const shipColor  = shipDone ? GREEN : shipActive ? ORANGE : GREY
+
+  // Date label formatter
+  const fmtD = d => `${d.getDate()} ${MON_NAMES[d.getMonth()]}`
+
+  return (
+    <div className="kit-timeline-wrap" onClick={e => e.stopPropagation()}>
+      {/* Production segment */}
+      <div className="kit-tl-node" title={`Production starts ${fmtD(prodStart)}`}>
+        <div className="kit-tl-dot" style={{ background: prodProg > 0 ? prodColor : GREY }} />
+        <span className="kit-tl-lbl">{fmtD(prodStart)}</span>
+      </div>
+
+      <div className="kit-tl-seg" style={{ flexGrow: prodFlex }}>
+        <div className="kit-tl-track" />
+        <div className="kit-tl-fill" style={{ width: `${prodProg * 100}%`, background: prodColor }} />
+        {!prodDone && (
+          <div className="kit-tl-icon" style={{ left: `${prodProg * 100}%` }} title="Kit production">📦</div>
+        )}
+        <span className="kit-tl-seg-lbl" style={{ color: prodColor }}>
+          {prodDone ? 'Ready' : prodActive ? 'In production' : 'Production'}
+        </span>
+      </div>
+
+      <div className="kit-tl-node" title={`Kit ready ${fmtD(prodEnd)}`}>
+        <div className="kit-tl-dot" style={{ background: prodDone ? GREEN : GREY }} />
+        <span className="kit-tl-lbl">{fmtD(prodEnd)}</span>
+      </div>
+
+      {/* Shipping segment */}
+      {shipStart && shipEnd && (
+        <>
+          <div className="kit-tl-seg" style={{ flexGrow: shipFlex }}>
+            <div className="kit-tl-track" />
+            <div className="kit-tl-fill" style={{ width: `${shipProg * 100}%`, background: shipColor }} />
+            {!shipDone && (
+              <div className="kit-tl-icon" style={{ left: `${shipProg * 100}%` }} title="Shipping">🚢</div>
+            )}
+            <span className="kit-tl-seg-lbl" style={{ color: shipColor }}>
+              {shipDone ? 'Arrived' : shipActive ? 'In transit' : 'Shipping'}
+            </span>
+          </div>
+
+          <div className="kit-tl-node" title={`Arrived ${fmtD(shipEnd)}`}>
+            <div className="kit-tl-dot" style={{ background: shipDone ? GREEN : GREY }} />
+            <span className="kit-tl-lbl">{fmtD(shipEnd)}</span>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 /* ── Milestone bar (display only in hub) ── */
 function MilestoneBar({ project }) {
   const milestones = getProjectMilestones(project)
@@ -308,6 +394,9 @@ export default function ProjectsHub({ projects, onOpenProject }) {
 
                 <div className="hub-col-arrow">›</div>
               </div>
+
+              {/* Kit timeline — only shown when kit dates are entered */}
+              <KitTimeline kit={project.kit} />
 
               {/* Milestone bar — display only */}
               <MilestoneBar project={project} />
