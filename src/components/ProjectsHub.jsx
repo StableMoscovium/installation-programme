@@ -120,74 +120,83 @@ function daysDiff(a, b) { return Math.max(1, Math.round((b - a) / 86400000)) }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)) }
 
 function KitTimeline({ kit }) {
-  if (!kit?.kitProduction || !kit?.kitReady) return null
+  if (!kit) return null
 
-  const prodStart = parseDate(kit.kitProduction)
-  const prodEnd   = parseDate(kit.kitReady)
-  const shipStart = kit.sent    ? parseDate(kit.sent)    : null
-  const shipEnd   = kit.arrived ? parseDate(kit.arrived) : null
+  const hasProd = kit.kitProduction && kit.kitReady
+  const hasShip = kit.sent && kit.arrived
+  if (!hasProd && !hasShip) return null
 
-  const prodDays = daysDiff(prodStart, prodEnd)
-  const shipDays = shipStart && shipEnd ? daysDiff(shipStart, shipEnd) : 0
-  const totalDays = prodDays + shipDays
-
-  const prodFlex = prodDays / totalDays
-  const shipFlex = shipDays / totalDays
-
-  // Progress within each phase (0–1)
-  const prodDone   = TODAY >= prodEnd
-  const prodActive = TODAY >= prodStart && TODAY < prodEnd
-  const prodProg   = prodDone ? 1 : prodActive ? clamp((TODAY - prodStart) / (prodEnd - prodStart), 0, 1) : 0
-
-  const shipDone   = shipEnd && TODAY >= shipEnd
-  const shipActive = shipStart && shipEnd && TODAY >= shipStart && TODAY < shipEnd
-  const shipProg   = shipDone ? 1 : shipActive ? clamp((TODAY - shipStart) / (shipEnd - shipStart), 0, 1) : 0
-
-  const prodColor  = prodDone ? GREEN : prodActive ? ORANGE : GREY
-  const shipColor  = shipDone ? GREEN : shipActive ? ORANGE : GREY
-
-  // Date label formatter
   const fmtD = d => `${d.getDate()} ${MON_NAMES[d.getMonth()]}`
+  const shipIcon = kit.cartage === 'air' ? '✈️' : '🚢'
+
+  // Production phase
+  const prodStart = hasProd ? parseDate(kit.kitProduction) : null
+  const prodEnd   = hasProd ? parseDate(kit.kitReady)      : null
+  const prodDays  = hasProd ? daysDiff(prodStart, prodEnd) : 0
+  const prodDone  = hasProd && TODAY >= prodEnd
+  const prodActive= hasProd && TODAY >= prodStart && TODAY < prodEnd
+  const prodProg  = prodDone ? 1 : prodActive ? clamp((TODAY - prodStart) / (prodEnd - prodStart), 0, 1) : 0
+  const prodColor = prodDone ? GREEN : prodActive ? ORANGE : GREY
+
+  // Shipping phase
+  const shipStart = hasShip ? parseDate(kit.sent)    : null
+  const shipEnd   = hasShip ? parseDate(kit.arrived) : null
+  const shipDays  = hasShip ? daysDiff(shipStart, shipEnd) : 0
+  const shipDone  = hasShip && TODAY >= shipEnd
+  const shipActive= hasShip && TODAY >= shipStart && TODAY < shipEnd
+  const shipProg  = shipDone ? 1 : shipActive ? clamp((TODAY - shipStart) / (shipEnd - shipStart), 0, 1) : 0
+  const shipColor = shipDone ? GREEN : shipActive ? ORANGE : GREY
+
+  const totalDays = prodDays + shipDays
+  const prodFlex  = totalDays ? prodDays / totalDays : 1
+  const shipFlex  = totalDays ? shipDays / totalDays : 1
 
   return (
     <div className="kit-timeline-wrap" onClick={e => e.stopPropagation()}>
+      <span className="tl-section-label">Kit</span>
+
+      {/* Start dot */}
+      <div className="kit-tl-node">
+        <div className="kit-tl-dot" style={{ background: prodProg > 0 || (!hasProd && shipProg > 0) ? (hasProd ? prodColor : shipColor) : GREY }} />
+        <span className="kit-tl-lbl">{hasProd ? fmtD(prodStart) : fmtD(shipStart)}</span>
+      </div>
+
       {/* Production segment */}
-      <div className="kit-tl-node" title={`Production starts ${fmtD(prodStart)}`}>
-        <div className="kit-tl-dot" style={{ background: prodProg > 0 ? prodColor : GREY }} />
-        <span className="kit-tl-lbl">{fmtD(prodStart)}</span>
-      </div>
-
-      <div className="kit-tl-seg" style={{ flexGrow: prodFlex }}>
-        <div className="kit-tl-track" />
-        <div className="kit-tl-fill" style={{ width: `${prodProg * 100}%`, background: prodColor }} />
-        {!prodDone && (
-          <div className="kit-tl-icon" style={{ left: `${prodProg * 100}%` }} title="Kit production">📦</div>
-        )}
-        <span className="kit-tl-seg-lbl" style={{ color: prodColor }}>
-          {prodDone ? 'Ready' : prodActive ? 'In production' : 'Production'}
-        </span>
-      </div>
-
-      <div className="kit-tl-node" title={`Kit ready ${fmtD(prodEnd)}`}>
-        <div className="kit-tl-dot" style={{ background: prodDone ? GREEN : GREY }} />
-        <span className="kit-tl-lbl">{fmtD(prodEnd)}</span>
-      </div>
+      {hasProd && (
+        <>
+          <div className="kit-tl-seg" style={{ flexGrow: prodFlex }}>
+            <div className="kit-tl-track" />
+            <div className="kit-tl-fill" style={{ width: `${prodProg * 100}%`, background: prodColor }} />
+            {!prodDone && (
+              <div className="kit-tl-icon" style={{ left: `${prodProg * 100}%` }} title="Kit production">📦</div>
+            )}
+            <span className="kit-tl-seg-lbl" style={{ color: prodColor }}>
+              {prodDone ? 'Ready' : prodActive ? 'In production' : 'Production'}
+            </span>
+          </div>
+          <div className="kit-tl-node">
+            <div className="kit-tl-dot" style={{ background: prodDone ? GREEN : GREY }} />
+            <span className="kit-tl-lbl">{fmtD(prodEnd)}</span>
+          </div>
+        </>
+      )}
 
       {/* Shipping segment */}
-      {shipStart && shipEnd && (
+      {hasShip && (
         <>
           <div className="kit-tl-seg" style={{ flexGrow: shipFlex }}>
             <div className="kit-tl-track" />
             <div className="kit-tl-fill" style={{ width: `${shipProg * 100}%`, background: shipColor }} />
             {!shipDone && (
-              <div className="kit-tl-icon" style={{ left: `${shipProg * 100}%` }} title="Shipping">🚢</div>
+              <div className="kit-tl-icon" style={{ left: `${shipProg * 100}%` }} title="In transit">
+                {shipIcon}
+              </div>
             )}
             <span className="kit-tl-seg-lbl" style={{ color: shipColor }}>
               {shipDone ? 'Arrived' : shipActive ? 'In transit' : 'Shipping'}
             </span>
           </div>
-
-          <div className="kit-tl-node" title={`Arrived ${fmtD(shipEnd)}`}>
+          <div className="kit-tl-node">
             <div className="kit-tl-dot" style={{ background: shipDone ? GREEN : GREY }} />
             <span className="kit-tl-lbl">{fmtD(shipEnd)}</span>
           </div>
@@ -202,6 +211,7 @@ function MilestoneBar({ project }) {
   const milestones = getProjectMilestones(project)
   return (
     <div className="milestone-bar">
+      <span className="tl-section-label">Milestones</span>
       {milestones.map((m, i, arr) => {
         const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
         return (
