@@ -717,6 +717,48 @@ textarea { resize: vertical; line-height: 1.5; }
 .lifecycle-tag.current { color: var(--blue);  background: var(--blue-light); }
 .lifecycle-tag.next    { color: var(--text-2); background: var(--bg); border: 0.5px solid var(--border-md); }
 
+/* ── MOB NOTES ── */
+.mob-notes-panel {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--border);
+}
+.mob-notes-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.mob-notes-title {
+  font-size: 11px; font-weight: 500; color: var(--text-2);
+}
+.mob-notes-edit-btn {
+  font-size: 11px; color: var(--blue); background: none; border: none;
+  cursor: pointer; font-family: var(--font); padding: 0;
+}
+.mob-notes-edit-btn:hover { text-decoration: underline; }
+
+.mob-notes-body {
+  font-size: 12px; color: var(--text-1); line-height: 1.6;
+  white-space: pre-wrap; cursor: pointer;
+  padding: 8px; border-radius: var(--radius-sm);
+  border: 0.5px solid transparent;
+  transition: border-color 0.12s, background 0.12s;
+  min-height: 40px;
+}
+.mob-notes-body:hover { border-color: var(--border-md); background: var(--bg); }
+.mob-notes-body.empty { color: var(--text-3); font-style: italic; }
+
+.mob-notes-edit {}
+.mob-notes-textarea {
+  width: 100%; font-size: 12px; line-height: 1.6;
+  border: 0.5px solid var(--blue); border-radius: var(--radius-sm);
+  padding: 8px; font-family: var(--font); resize: vertical;
+  color: var(--text-1); background: var(--surface);
+  outline: none;
+}
+.mob-notes-actions {
+  display: flex; gap: 6px; margin-top: 6px;
+}
+
 /* Milestone list in form */
 .milestone-form-list { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
 .milestone-form-row {

@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, getProjectMilestones } from '../lib/constants'
 
-export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold }) {
+export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold, onUpdateMobNotes }) {
   const mobs = Object.entries(project.mobs || {})
+  // Track which mob is in edit mode and its draft text
+  const [editingNotes, setEditingNotes] = useState({}) // { mobKey: draftText }
 
   function handlePrepToggle(mobKey, currentPrep, stageIndex) {
     const newPrep = currentPrep > stageIndex ? stageIndex : stageIndex + 1
@@ -174,7 +177,7 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
               {/* Divider */}
               <div className="detail-mob-divider" />
 
-              {/* Right — prep status */}
+              {/* Right — prep status + notes */}
               <div className="detail-mob-right">
                 <div className="prep-stage-list">
                   {PREP_STAGES.map((stage, si) => {
@@ -192,6 +195,56 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                       </div>
                     )
                   })}
+                </div>
+
+                {/* Mob notes */}
+                <div className="mob-notes-panel">
+                  <div className="mob-notes-header">
+                    <span className="mob-notes-title">Notes</span>
+                    {editingNotes[key] === undefined && (
+                      <button
+                        className="mob-notes-edit-btn"
+                        onClick={() => setEditingNotes(prev => ({ ...prev, [key]: mob.notes || '' }))}
+                      >
+                        {mob.notes ? 'Edit' : '+ Add'}
+                      </button>
+                    )}
+                  </div>
+
+                  {editingNotes[key] !== undefined ? (
+                    <div className="mob-notes-edit">
+                      <textarea
+                        className="mob-notes-textarea"
+                        value={editingNotes[key]}
+                        onChange={e => setEditingNotes(prev => ({ ...prev, [key]: e.target.value }))}
+                        placeholder="Add notes, lessons learned, site observations…"
+                        rows={4}
+                        autoFocus
+                      />
+                      <div className="mob-notes-actions">
+                        <button
+                          className="btn btn-primary"
+                          style={{ fontSize: 12, padding: '5px 14px' }}
+                          onClick={() => {
+                            onUpdateMobNotes(key, editingNotes[key])
+                            setEditingNotes(prev => { const n = { ...prev }; delete n[key]; return n })
+                          }}
+                        >Save</button>
+                        <button
+                          className="btn btn-ghost"
+                          style={{ fontSize: 12, padding: '5px 14px' }}
+                          onClick={() => setEditingNotes(prev => { const n = { ...prev }; delete n[key]; return n })}
+                        >Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`mob-notes-body${!mob.notes ? ' empty' : ''}`}
+                      onClick={() => setEditingNotes(prev => ({ ...prev, [key]: mob.notes || '' }))}
+                    >
+                      {mob.notes || 'No notes yet — click to add'}
+                    </div>
+                  )}
                 </div>
               </div>
 
