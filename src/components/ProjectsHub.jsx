@@ -152,8 +152,9 @@ function KitTimeline({ kit }) {
   const shipFlex  = totalDays ? shipDays / totalDays : 1
 
   return (
-    <div className="kit-timeline-wrap" onClick={e => e.stopPropagation()}>
-      <span className="tl-section-label">Kit</span>
+    <div className="bar-section" onClick={e => e.stopPropagation()}>
+      <span className="tl-section-label">Kit Progress</span>
+    <div className="kit-timeline-wrap">
 
       {/* Start dot */}
       <div className="kit-tl-node">
@@ -203,6 +204,7 @@ function KitTimeline({ kit }) {
         </>
       )}
     </div>
+    </div>
   )
 }
 
@@ -210,8 +212,9 @@ function KitTimeline({ kit }) {
 function MilestoneBar({ project }) {
   const milestones = getProjectMilestones(project)
   return (
-    <div className="milestone-bar">
+    <div className="bar-section">
       <span className="tl-section-label">Milestones</span>
+      <div className="milestone-bar">
       {milestones.map((m, i, arr) => {
         const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
         return (
@@ -227,6 +230,7 @@ function MilestoneBar({ project }) {
           </div>
         )
       })}
+      </div>
     </div>
   )
 }

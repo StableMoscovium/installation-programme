@@ -600,20 +600,23 @@ textarea { resize: vertical; line-height: 1.5; }
 .hub-row.on-hold { opacity: 0.45; filter: grayscale(0.6); }
 .hub-row.on-hold:hover { opacity: 0.65; }
 
-/* Section label — fixed width so Kit and Milestones start at same x position */
+/* Section wrapper — label above, bar below */
+.bar-section {
+  border-top: 0.5px solid var(--border);
+  padding: 8px 0 4px;
+}
 .tl-section-label {
+  display: block;
   font-size: 9px; font-weight: 600; color: var(--text-3);
   text-transform: uppercase; letter-spacing: 0.06em;
-  white-space: nowrap; flex-shrink: 0;
-  width: 76px; padding-bottom: 16px; /* pad to match node label height below dot */
+  margin-bottom: 6px;
 }
 
 /* ── KIT TIMELINE (hub) ── */
 .kit-timeline-wrap {
   display: flex;
   align-items: center;
-  padding: 10px 2px 6px;
-  border-top: 0.5px solid var(--border);
+  padding-bottom: 4px;
   gap: 0;
 }
 
@@ -667,9 +670,8 @@ textarea { resize: vertical; line-height: 1.5; }
 .milestone-bar {
   display: flex;
   align-items: flex-start;
-  border-top: 0.5px solid var(--border);
-  padding: 10px 0 6px;
   cursor: default;
+  padding-bottom: 4px;
 }
 
 /* Each ms-item is: optional segment + node, and uses flex: 1 so items share space equally */
