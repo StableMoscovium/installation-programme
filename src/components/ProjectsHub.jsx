@@ -211,27 +211,34 @@ function KitTimeline({ kit }) {
 /* ── Milestone bar (display only in hub) ── */
 function MilestoneBar({ project }) {
   const milestones = getProjectMilestones(project)
+  const fmtD = d => `${d.getDate()} ${MON_NAMES[d.getMonth()]}`
+  const dateLabel = fmtD(TODAY) // placeholder — will link to project dates later
+
   return (
     <div className="bar-section">
       <span className="tl-section-label">Milestones</span>
       <div className="milestone-bar">
-      {milestones.map((m, i, arr) => {
-        const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
-        return (
-          <div key={m.key || i} className="ms-item">
-            {i > 0 && <div className={`ms-seg${m.done ? ' complete' : ''}`} />}
-            <div
-              className={`ms-node${m.done ? ' complete' : isCurrent ? ' current' : ''}`}
-              title={m.label}
-            >
-              <div className="ms-dot" />
+        {/* Left date anchor */}
+        <div className="ms-date-anchor ms-date-left">{dateLabel}</div>
+
+        {milestones.map((m, i, arr) => {
+          const isCurrent = !m.done && (i === 0 || arr[i - 1].done)
+          return (
+            <div key={m.key || i} className="ms-item">
+              {i > 0 && <div className={`ms-seg${m.done ? ' complete' : ''}`} />}
+              <div
+                className={`ms-node${m.done ? ' complete' : isCurrent ? ' current' : ''}`}
+                title={m.label}
+              >
+                <div className="ms-dot" />
+                <div className="ms-lbl">{m.short || m.label}</div>
+              </div>
             </div>
-          </div>
-        )
-      })}
-      <span className="ms-count">
-        {milestones.filter(m => m.done).length}/{milestones.length}
-      </span>
+          )
+        })}
+
+        {/* Right date anchor */}
+        <div className="ms-date-anchor ms-date-right">{dateLabel}</div>
       </div>
     </div>
   )

@@ -694,8 +694,20 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .ms-seg.complete { background: var(--blue); }
 
-/* Node is just the dot */
-.ms-node { display: flex; flex-shrink: 0; }
+/* Date anchors — bookend the milestone bar */
+.ms-date-anchor {
+  font-size: 9px; color: var(--text-3); white-space: nowrap;
+  flex-shrink: 0; line-height: 1; padding-bottom: 0;
+  align-self: flex-start; margin-top: 1px;
+}
+.ms-date-left  { margin-right: 8px; }
+.ms-date-right { margin-left: 8px; }
+
+/* Node is dot + label */
+.ms-node {
+  display: flex; flex-direction: column;
+  align-items: flex-start; flex-shrink: 0;
+}
 
 .ms-dot {
   width: 10px; height: 10px; border-radius: 50%;
@@ -705,9 +717,17 @@ textarea { resize: vertical; line-height: 1.5; }
 .ms-node.complete .ms-dot { background: var(--blue); border-color: var(--blue); }
 .ms-node.current  .ms-dot { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
 
-.ms-count {
-  font-size: 10px; color: var(--text-3); font-family: var(--font-mono);
-  margin-left: 8px; flex-shrink: 0; white-space: nowrap;
+.ms-lbl {
+  font-size: 9px; color: var(--text-3);
+  white-space: nowrap; line-height: 1;
+  margin-top: 4px;
+}
+.ms-node.complete .ms-lbl { color: var(--blue); font-weight: 500; }
+.ms-node.current  .ms-lbl { color: var(--blue); font-weight: 600; }
+
+/* Last label — right-anchored to its dot */
+.ms-item:last-child .ms-lbl {
+  transform: translateX(-100%) translateX(10px);
 }
 
 /* ── HOLD BUTTON ── */
