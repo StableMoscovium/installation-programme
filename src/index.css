@@ -717,6 +717,46 @@ textarea { resize: vertical; line-height: 1.5; }
 .lifecycle-tag.current { color: var(--blue);  background: var(--blue-light); }
 .lifecycle-tag.next    { color: var(--text-2); background: var(--bg); border: 0.5px solid var(--border-md); }
 
+/* ── KIT CARD ── */
+.kit-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border);
+}
+.kit-form { display: flex; flex-direction: column; gap: 12px; }
+.kit-row  { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+.kit-dates-row { gap: 12px; }
+.kit-field { display: flex; flex-direction: column; gap: 4px; }
+.kit-label { font-size: 11px; font-weight: 500; color: var(--text-2); }
+
+.kit-select, .kit-date-input, .kit-url-input {
+  font-family: var(--font); font-size: 13px; color: var(--text-1);
+  background: var(--surface); border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-sm); padding: 6px 10px; outline: none;
+}
+.kit-select:focus, .kit-date-input:focus, .kit-url-input:focus { border-color: var(--blue); }
+.kit-url-input { min-width: 320px; }
+
+.kit-cartage-toggle { display: flex; gap: 6px; }
+.kit-cartage-btn {
+  padding: 6px 14px; border-radius: var(--radius-md); font-size: 13px;
+  border: 0.5px solid var(--border-md); background: transparent;
+  cursor: pointer; font-family: var(--font); color: var(--text-2);
+  transition: all 0.12s;
+}
+.kit-cartage-btn:hover  { border-color: var(--blue); color: var(--blue); }
+.kit-cartage-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 500; }
+
+.kit-view { display: flex; flex-direction: column; gap: 10px; }
+.kit-view-row {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+}
+.kit-view-cell { display: flex; flex-direction: column; gap: 3px; }
+.kit-view-label { font-size: 10px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.kit-view-val   { font-size: 13px; color: var(--text-1); }
+.kit-view-track { display: flex; align-items: center; gap: 10px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+.kit-track-link { font-size: 12px; color: var(--blue); text-decoration: none; word-break: break-all; }
+.kit-track-link:hover { text-decoration: underline; }
+
 /* ── MOB NOTES ── */
 .mob-notes-panel {
   margin-top: 16px;

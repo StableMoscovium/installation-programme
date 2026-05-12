@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, getProjectMilestones } from '../lib/constants'
 
-export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold, onUpdateMobNotes }) {
+export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold, onUpdateMobNotes, onUpdateKit }) {
   const mobs = Object.entries(project.mobs || {})
   // Track which mob is in edit mode and its draft text
   const [editingNotes, setEditingNotes] = useState({}) // { mobKey: draftText }
@@ -83,6 +83,9 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
           ))}
         </div>
       </div>
+
+      {/* KIT TRACKING */}
+      <KitCard kit={project.kit} onSave={onUpdateKit} />
 
       {/* LIFECYCLE MILESTONES */}
       <div className="detail-card" style={{ marginBottom: 12 }}>
@@ -282,6 +285,137 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                 <div className="note-body">{project.genNotes}</div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function KitCard({ kit, onSave }) {
+  const [editing, setEditing] = useState(false)
+  const blank = { supplier: '', cartage: '', kitProduction: '', kitReady: '', sent: '', arrived: '', trackingLink: '' }
+  const [draft, setDraft] = useState(kit || blank)
+
+  function set(field, val) { setDraft(prev => ({ ...prev, [field]: val })) }
+
+  function fmtDate(iso) {
+    if (!iso) return '—'
+    const [y, m, d] = iso.split('-')
+    const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    return `${parseInt(d)} ${mon[parseInt(m) - 1]} ${y}`
+  }
+
+  function startEdit() { setDraft(kit || blank); setEditing(true) }
+  function cancel()    { setDraft(kit || blank); setEditing(false) }
+  function save()      { onSave(draft); setEditing(false) }
+
+  const k = kit || blank
+
+  return (
+    <div className="detail-card kit-card" style={{ marginBottom: 12 }}>
+      <div className="kit-header">
+        <h3 className="detail-card-title" style={{ marginBottom: 0 }}>Kit</h3>
+        {!editing
+          ? <button className="mob-notes-edit-btn" onClick={startEdit}>Edit</button>
+          : <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn btn-primary" style={{ fontSize: 12, padding: '4px 14px' }} onClick={save}>Save</button>
+              <button className="btn btn-ghost"   style={{ fontSize: 12, padding: '4px 14px' }} onClick={cancel}>Cancel</button>
+            </div>
+        }
+      </div>
+
+      {editing ? (
+        <div className="kit-form">
+          {/* Row 1: Supplier + Cartage */}
+          <div className="kit-row">
+            <div className="kit-field">
+              <label className="kit-label">Supplier</label>
+              <select className="kit-select" value={draft.supplier} onChange={e => set('supplier', e.target.value)}>
+                <option value="">— Select —</option>
+                <option value="GH">GH</option>
+                <option value="JDN">JDN</option>
+              </select>
+            </div>
+            <div className="kit-field">
+              <label className="kit-label">Cartage</label>
+              <div className="kit-cartage-toggle">
+                <button
+                  type="button"
+                  className={`kit-cartage-btn${draft.cartage === 'sea' ? ' active' : ''}`}
+                  onClick={() => set('cartage', draft.cartage === 'sea' ? '' : 'sea')}
+                >🚢 Sea</button>
+                <button
+                  type="button"
+                  className={`kit-cartage-btn${draft.cartage === 'air' ? ' active' : ''}`}
+                  onClick={() => set('cartage', draft.cartage === 'air' ? '' : 'air')}
+                >✈️ Air</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Dates */}
+          <div className="kit-row kit-dates-row">
+            {[['kitProduction','Kit Production'],['kitReady','Kit Ready'],['sent','Sent'],['arrived','Arrived']].map(([field, label]) => (
+              <div key={field} className="kit-field">
+                <label className="kit-label">{label}</label>
+                <input type="date" className="kit-date-input" value={draft[field]} onChange={e => set(field, e.target.value)} />
+              </div>
+            ))}
+          </div>
+
+          {/* Row 3: Tracking link */}
+          <div className="kit-row">
+            <div className="kit-field" style={{ flex: 1 }}>
+              <label className="kit-label">Tracking Link</label>
+              <input
+                type="url"
+                className="kit-url-input"
+                value={draft.trackingLink}
+                onChange={e => set('trackingLink', e.target.value)}
+                placeholder="https://track.carrier.com/…"
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="kit-view">
+          <div className="kit-view-row">
+            <div className="kit-view-cell">
+              <span className="kit-view-label">Supplier</span>
+              <span className="kit-view-val">{k.supplier || '—'}</span>
+            </div>
+            <div className="kit-view-cell">
+              <span className="kit-view-label">Cartage</span>
+              <span className="kit-view-val">
+                {k.cartage === 'sea' ? '🚢 Sea freight' : k.cartage === 'air' ? '✈️ Air freight' : '—'}
+              </span>
+            </div>
+            <div className="kit-view-cell">
+              <span className="kit-view-label">Kit Production</span>
+              <span className="kit-view-val">{fmtDate(k.kitProduction)}</span>
+            </div>
+            <div className="kit-view-cell">
+              <span className="kit-view-label">Kit Ready</span>
+              <span className="kit-view-val">{fmtDate(k.kitReady)}</span>
+            </div>
+            <div className="kit-view-cell">
+              <span className="kit-view-label">Sent</span>
+              <span className="kit-view-val">{fmtDate(k.sent)}</span>
+            </div>
+            <div className="kit-view-cell">
+              <span className="kit-view-label">Arrived</span>
+              <span className="kit-view-val">{fmtDate(k.arrived)}</span>
+            </div>
+          </div>
+          <div className="kit-view-track">
+            <span className="kit-view-label">Track</span>
+            {k.trackingLink
+              ? <a href={k.trackingLink} target="_blank" rel="noopener noreferrer" className="kit-track-link">
+                  {k.trackingLink} ↗
+                </a>
+              : <span className="kit-view-val">—</span>
+            }
           </div>
         </div>
       )}

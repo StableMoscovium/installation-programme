@@ -117,6 +117,20 @@ export default function App() {
     }
   }
 
+  async function updateKit(projNum, kit) {
+    const { error } = await supabase
+      .from('projects')
+      .update({ kit, updated_at: new Date().toISOString() })
+      .eq('proj_num', projNum)
+
+    if (error) { alert(`Save failed: ${error.message}`); return }
+
+    setProjects(prev => prev.map(p =>
+      p.projNum === projNum ? { ...p, kit } : p
+    ))
+    setSelectedProject(prev => prev ? { ...prev, kit } : null)
+  }
+
   async function updateMobNotes(projNum, mobKey, notes) {
     const project = projects.find(p => p.projNum === projNum)
     if (!project) return
@@ -252,6 +266,7 @@ export default function App() {
             onDelete={() => deleteProject(selectedProject.projNum)}
             onUpdatePrep={(mobKey, prep) => updatePrep(selectedProject.projNum, mobKey, prep)}
             onUpdateMobNotes={(mobKey, notes) => updateMobNotes(selectedProject.projNum, mobKey, notes)}
+            onUpdateKit={(kit) => updateKit(selectedProject.projNum, kit)}
             onUpdateMilestone={(milestone) => updateMilestone(selectedProject.projNum, milestone)}
             onUpdateMilestonesList={(list) => updateMilestonesList(selectedProject.projNum, list)}
             onUpdateHold={(onHold) => updateHold(selectedProject.projNum, onHold)}
