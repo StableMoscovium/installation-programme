@@ -98,11 +98,15 @@ function getStats(projects) {
     if (preps.length && Math.min(...preps) >= 5) fullyPrepped++
   })
 
-  // next upcoming mob across all projects
+  // next mob — includes active mobs (already on site) as well as upcoming
   let nextProject = null, nextDays = Infinity
   projects.forEach(p => {
+    if (p.onHold) return
     const entry = getNextMobEntry(p)
-    if (entry?.status.type === 'upcoming' && entry.status.daysUntil < nextDays) {
+    if (entry?.status.type === 'active') {
+      // Active mob: treat as 0 days — always wins unless another active mob exists
+      if (0 < nextDays) { nextDays = 0; nextProject = p }
+    } else if (entry?.status.type === 'upcoming' && entry.status.daysUntil < nextDays) {
       nextDays    = entry.status.daysUntil
       nextProject = p
     }
@@ -336,7 +340,9 @@ export default function ProjectsHub({ projects, onOpenProject }) {
         {stats.nextProject && (
           <div className="metric-card hub-next-card" onClick={() => onOpenProject(stats.nextProject)} style={{ cursor: 'pointer' }}>
             <div className="metric-val" style={{ fontSize: 14 }}>{stats.nextProject.projName}</div>
-            <div className="metric-lbl">Next mob — {stats.nextDays}d away</div>
+            <div className="metric-lbl">
+              {stats.nextDays === 0 ? 'Currently on site' : `Next mob — ${stats.nextDays}d away`}
+            </div>
           </div>
         )}
       </div>
