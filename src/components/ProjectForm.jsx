@@ -155,6 +155,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
       milestone,
       milestonesList,
       onHold,
+      kit:         initialData?.kit ?? null,
       createdAt:   initialData?.createdAt || new Date().toISOString(),
       updatedAt:   new Date().toISOString(),
     })
