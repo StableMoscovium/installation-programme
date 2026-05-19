@@ -139,6 +139,12 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                 <div className="mob-detail-header">
                   <span className="mob-detail-label">MOB-{i + 1}</span>
                   <span className="mob-detail-phase">{mob.phase}</span>
+                  {(mob.travel || []).length > 0 && (
+                    <span style={{ fontSize: 13, display: 'flex', gap: 3 }}>
+                      {(mob.travel || []).includes('air') && <span title="Airplane">✈️</span>}
+                      {(mob.travel || []).includes('car') && <span title="Car">🚗</span>}
+                    </span>
+                  )}
                   {mob.start && mob.end && (
                     <span className="mob-detail-dates">{formatDateRange(mob.start, mob.end)}</span>
                   )}

@@ -124,7 +124,15 @@ function MobCard({ proj, mob, iso, onClick }) {
       style={{ background: colour.bg, borderLeftColor: colour.border, cursor: 'pointer' }}
       onClick={onClick}
     >
-      <div className="mob-proj-num" style={{ color: colour.num }}>{proj.projNum}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="mob-proj-num" style={{ color: colour.num }}>{proj.projNum}</div>
+        {(mob.travel || []).length > 0 && (
+          <div style={{ fontSize: 10, display: 'flex', gap: 2 }}>
+            {(mob.travel || []).includes('air') && <span title="Airplane">✈️</span>}
+            {(mob.travel || []).includes('car') && <span title="Car">🚗</span>}
+          </div>
+        )}
+      </div>
       <div className="mob-proj-name" style={{ color: colour.text }}>{proj.projName}</div>
       <div className="mob-phase" style={{ color: colour.text }}>{mob.phase}</div>
       {eq.length > 0 && (
