@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  EQUIPMENT, TASK_LIBRARY, PREP_STAGES, REGIONS, PROJECT_COLOURS,
+  EQUIPMENT, EQ_MAP, TASK_LIBRARY, PREP_STAGES, REGIONS, PROJECT_COLOURS,
   MON_NAMES, DAY_NAMES,
   fmtDate, parseDate, addDays, daysBetween,
   defaultMilestonesList,
