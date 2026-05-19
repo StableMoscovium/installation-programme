@@ -114,8 +114,8 @@ function MobCard({ proj, mob, iso, onClick }) {
   const colour   = proj.colour
   const eq       = mob.days?.[iso] || []
   const complete = mob.dayInfo?.[iso]?.complete
-  const eqOutline = eq.length > 0
-    ? (complete ? '1.5px solid #0F6E56' : '1.5px solid #C0392B')
+  const chipShadow = eq.length > 0
+    ? (complete ? '0 0 0 2px #0F6E56' : '0 0 0 2px #C0392B')
     : undefined
 
   return (
@@ -136,11 +136,15 @@ function MobCard({ proj, mob, iso, onClick }) {
       <div className="mob-proj-name" style={{ color: colour.text }}>{proj.projName}</div>
       <div className="mob-phase" style={{ color: colour.text }}>{mob.phase}</div>
       {eq.length > 0 && (
-        <div className="mob-eq-row" style={{ outline: eqOutline, outlineOffset: '2px', borderRadius: 3 }}>
+        <div className="mob-eq-row">
           {eq.map(code => {
             const e = EQ_MAP[code]
             return e
-              ? <span key={code} className="mob-eq-chip" style={{ background: e.bg, color: e.col }}>{e.label}</span>
+              ? <span
+                  key={code}
+                  className="mob-eq-chip"
+                  style={{ background: e.bg, color: e.col, boxShadow: chipShadow }}
+                >{e.label}</span>
               : null
           })}
         </div>
