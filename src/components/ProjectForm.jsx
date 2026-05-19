@@ -13,6 +13,7 @@ const BLANK_MOB = () => ({
   tasks: [],
   days: {},
   standDown: {},
+  dayInfo: {},
   prep: 0,
 })
 
@@ -44,6 +45,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [milestonesList, setMilestonesList] = useState(defaultMilestonesList())
   const [newMilestone,   setNewMilestone]   = useState('')
   const [onHold,         setOnHold]         = useState(false)
+  const [infoModal,      setInfoModal]      = useState(null) // { mobIdx, iso }
 
   // Load existing project data for editing
   useEffect(() => {
@@ -105,6 +107,14 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setMobs(prev => prev.map((m, mi) =>
       mi === mobIdx ? { ...m, tasks: [...m.tasks, name] } : m
     ))
+  }
+
+  function updateDayInfo(mobIdx, iso, patch) {
+    setMobs(prev => prev.map((m, mi) => {
+      if (mi !== mobIdx) return m
+      const existing = m.dayInfo?.[iso] || {}
+      return { ...m, dayInfo: { ...(m.dayInfo || {}), [iso]: { ...existing, ...patch } } }
+    }))
   }
 
   function toggleStandDown(mobIdx, iso) {
@@ -285,6 +295,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
                 onAddCustomTask={() => addCustomTask(mi)}
                 onToggleEquip={(iso, code) => toggleEquip(mi, iso, code)}
                 onToggleStandDown={(iso) => toggleStandDown(mi, iso)}
+                onOpenInfo={(iso) => setInfoModal({ mobIdx: mi, iso })}
                 onRemove={mobs.length > 1 ? () => removeMob(mi) : null}
               />
             </div>
@@ -377,11 +388,97 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
         <button className="btn btn-primary" onClick={handleSave}>Save & show on calendar</button>
         <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
       </div>
+
+      {/* Day info modal */}
+      {infoModal && (
+        <DayInfoModal
+          mob={mobs[infoModal.mobIdx]}
+          iso={infoModal.iso}
+          onClose={() => setInfoModal(null)}
+          onUpdate={(patch) => updateDayInfo(infoModal.mobIdx, infoModal.iso, patch)}
+        />
+      )}
     </div>
   )
 }
 
-function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onToggleEquip, onToggleStandDown, onRemove }) {
+/* ── Day Info Modal ── */
+function DayInfoModal({ mob, iso, onClose, onUpdate }) {
+  const [activeTab, setActiveTab] = useState(null)
+
+  const equip = (mob.days?.[iso] || [])
+  const info  = mob.dayInfo?.[iso] || {}
+  const d     = parseDate(iso)
+  const label = `${DAY_NAMES[d.getDay()]} ${d.getDate()} ${MON_NAMES[d.getMonth()]}`
+
+  // Auto-select first tab
+  useState(() => { if (equip.length && !activeTab) setActiveTab(equip[0]) }, [])
+  const currentTab = activeTab || equip[0] || null
+
+  return (
+    <div className="info-modal-overlay" onClick={onClose}>
+      <div className="info-modal" onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="info-modal-header">
+          <div>
+            <div className="info-modal-date">{label}</div>
+            <div className="info-modal-sub">Equipment checklist</div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button
+              className={`info-complete-btn${info.complete ? ' on' : ''}`}
+              onClick={() => onUpdate({ complete: !info.complete })}
+            >
+              {info.complete ? '✓ Complete' : 'Mark complete'}
+            </button>
+            <button className="info-close-btn" onClick={onClose}>✕</button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="info-modal-body">
+          {/* Left — equipment tab list */}
+          <div className="info-tab-list">
+            {equip.map(code => {
+              const e = EQ_MAP[code]
+              return (
+                <button
+                  key={code}
+                  className={`info-tab-btn${currentTab === code ? ' active' : ''}`}
+                  style={currentTab === code ? { background: e?.bg, borderColor: e?.col, color: e?.col } : {}}
+                  onClick={() => setActiveTab(code)}
+                >
+                  {code}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Right — tab content */}
+          <div className="info-tab-content">
+            {currentTab && (() => {
+              const e = EQ_MAP[currentTab]
+              return (
+                <div>
+                  <div className="info-tab-title" style={{ color: e?.col }}>
+                    {e?.code} — {e?.title}
+                  </div>
+                  <p className="info-tab-placeholder">
+                    Input fields for {e?.title} coming next.
+                  </p>
+                </div>
+              )
+            })()}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onToggleEquip, onToggleStandDown, onOpenInfo, onRemove }) {
   const days = mob.start && mob.end
     ? daysBetween(parseDate(mob.start), parseDate(mob.end))
     : []
@@ -460,6 +557,14 @@ function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onTo
                     title="Mark as Stand Down — hides this day from the calendar"
                     type="button"
                   >SD</button>
+                  {!isSD && active.length > 0 && (
+                    <button
+                      className={`info-btn${mob.dayInfo?.[iso]?.complete ? ' complete' : ''}`}
+                      onClick={() => onOpenInfo(iso)}
+                      title="Equipment checklist for this day"
+                      type="button"
+                    >INFO</button>
+                  )}
                 </div>
               )
             })}

@@ -111,8 +111,15 @@ export default function ProgrammeCalendar({ projects, onOpenProject }) {
 }
 
 function MobCard({ proj, mob, iso, onClick }) {
-  const colour = proj.colour
-  const eq = mob.days?.[iso] || []
+  const colour  = proj.colour
+  const eq      = mob.days?.[iso] || []
+  const hasInfo = eq.length > 0
+  const complete = mob.dayInfo?.[iso]?.complete
+
+  // Outline: green if complete, red if equipment set but not checked
+  const outlineColor = hasInfo
+    ? (complete ? '#0F6E56' : '#C0392B')
+    : null
 
   return (
     <div
@@ -120,6 +127,8 @@ function MobCard({ proj, mob, iso, onClick }) {
       style={{
         background: colour.bg,
         borderLeftColor: colour.border,
+        outline: outlineColor ? `1.5px solid ${outlineColor}` : undefined,
+        outlineOffset: '-1px',
         cursor: 'pointer',
       }}
       onClick={onClick}
