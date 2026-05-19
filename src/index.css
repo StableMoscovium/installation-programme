@@ -276,6 +276,16 @@ textarea { resize: vertical; line-height: 1.5; }
 .eq-toggles  { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
 .sd-label { font-size: 11px; color: var(--red); font-weight: 500; flex: 1; }
 
+/* Travel type toggle buttons */
+.travel-btn {
+  padding: 5px 12px; border-radius: 20px; font-size: 12px;
+  border: 0.5px solid var(--border-md); background: transparent;
+  color: var(--text-2); cursor: pointer; font-family: var(--font);
+  transition: all 0.12s;
+}
+.travel-btn:hover { border-color: var(--blue); color: var(--blue); }
+.travel-btn.on { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 500; }
+
 /* INFO button per day */
 .info-btn {
   padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 600;

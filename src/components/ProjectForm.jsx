@@ -10,7 +10,7 @@ const BLANK_MOB = () => ({
   phase: 'Structural installation',
   start: '',
   end: '',
-  tasks: [],
+  travel: [],
   days: {},
   standDown: {},
   dayInfo: {},
@@ -46,6 +46,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   const [newMilestone,   setNewMilestone]   = useState('')
   const [onHold,         setOnHold]         = useState(false)
   const [infoModal,      setInfoModal]      = useState(null) // { mobIdx, iso }
+  const [travelModal,    setTravelModal]    = useState(null) // mobIdx
 
   // Load existing project data for editing
   useEffect(() => {
@@ -107,6 +108,17 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setMobs(prev => prev.map((m, mi) =>
       mi === mobIdx ? { ...m, tasks: [...m.tasks, name] } : m
     ))
+  }
+
+  function toggleTravel(mobIdx, type) {
+    setMobs(prev => prev.map((m, mi) => {
+      if (mi !== mobIdx) return m
+      const travel = m.travel || []
+      const updated = travel.includes(type)
+        ? travel.filter(t => t !== type)
+        : [...travel, type]
+      return { ...m, travel: updated }
+    }))
   }
 
   function updateDayInfo(mobIdx, iso, patch) {
@@ -291,8 +303,8 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
                 mob={mob}
                 mobIndex={mi}
                 onUpdate={(field, val) => updateMob(mi, field, val)}
-                onToggleTask={task => toggleTask(mi, task)}
-                onAddCustomTask={() => addCustomTask(mi)}
+                onToggleTravel={(type) => toggleTravel(mi, type)}
+                onOpenTravelInfo={() => setTravelModal(mi)}
                 onToggleEquip={(iso, code) => toggleEquip(mi, iso, code)}
                 onToggleStandDown={(iso) => toggleStandDown(mi, iso)}
                 onOpenInfo={(iso) => setInfoModal({ mobIdx: mi, iso })}
@@ -388,6 +400,16 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
         <button className="btn btn-primary" onClick={handleSave}>Save & show on calendar</button>
         <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
       </div>
+
+      {/* Travel info modal */}
+      {travelModal !== null && (
+        <TravelInfoModal
+          mob={mobs[travelModal]}
+          projNum={projNum}
+          projName={projName}
+          onClose={() => setTravelModal(null)}
+        />
+      )}
 
       {/* Day info modal */}
       {infoModal && (
@@ -499,12 +521,70 @@ function DayInfoModal({ mob, iso, projNum, projName, phase, onClose, onUpdate })
   )
 }
 
-function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onToggleEquip, onToggleStandDown, onOpenInfo, onRemove }) {
+/* ── Travel Info Modal ── */
+function TravelInfoModal({ mob, projNum, projName, onClose }) {
+  const travel = mob.travel || []
+  const [activeTab, setActiveTab] = useState(travel[0] || 'air')
+
+  return (
+    <div className="info-modal-overlay" onClick={onClose}>
+      <div className="info-modal" onClick={e => e.stopPropagation()}>
+        <div className="info-modal-header">
+          <div>
+            <div className="info-modal-date">Travel Information</div>
+            <div className="info-modal-sub">{projNum} · {projName} · {mob.phase}</div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button className="btn btn-primary" style={{ fontSize: 12, padding: '5px 16px' }} onClick={onClose}>Save</button>
+            <button className="info-close-btn" onClick={onClose}>✕</button>
+          </div>
+        </div>
+
+        <div className="info-modal-body">
+          {/* Left — travel type tabs */}
+          <div className="info-tab-list">
+            {[{ key: 'air', icon: '✈️', label: 'Airplane' }, { key: 'car', icon: '🚗', label: 'Car' }].map(t => {
+              const sel = travel.includes(t.key)
+              const act = activeTab === t.key
+              return (
+                <button
+                  key={t.key}
+                  className={`info-tab-btn${act ? ' active' : ''}${sel ? ' selected' : ' disabled'}`}
+                  disabled={!sel}
+                  onClick={() => sel && setActiveTab(t.key)}
+                  title={sel ? t.label : `${t.label} — not selected`}
+                  style={sel && act ? { background: '#E6F1FB', borderColor: '#185FA5', color: '#185FA5' } : {}}
+                >{t.icon}</button>
+              )
+            })}
+          </div>
+
+          {/* Right — content */}
+          <div className="info-tab-content">
+            <div className="info-project-header">
+              <span className="info-proj-num">{projNum}</span>
+              <span className="info-proj-name">{projName}</span>
+              <span className="info-proj-meta">{mob.phase}</span>
+            </div>
+            <div className="info-equip-section">
+              <div className="info-equip-heading">
+                <span className="info-tab-title">
+                  {activeTab === 'air' ? '✈️ Airplane' : '🚗 Car'}
+                </span>
+              </div>
+              <p className="info-tab-placeholder">Input fields coming next.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MobBlock({ mob, mobIndex, onUpdate, onToggleTravel, onOpenTravelInfo, onToggleEquip, onToggleStandDown, onOpenInfo, onRemove }) {
   const days = mob.start && mob.end
     ? daysBetween(parseDate(mob.start), parseDate(mob.end))
     : []
-
-  const allTasks = [...new Set([...TASK_LIBRARY, ...mob.tasks])]
 
   return (
     <div className="mob-block">
@@ -528,18 +608,22 @@ function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onTo
         </div>
       </div>
 
-      <div className="field-sub-label">Tasks in this mob</div>
-      <div className="task-chips">
-        {allTasks.map(task => (
-          <button
-            key={task}
-            className={`task-chip${mob.tasks.includes(task) ? ' on' : ''}`}
-            onClick={() => onToggleTask(task)}
-          >
-            {task}
-          </button>
-        ))}
-        <button className="task-chip dashed" onClick={onAddCustomTask}>+ Custom</button>
+      {/* Travel type */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+        <span className="field-sub-label" style={{ margin: 0 }}>Travel type</span>
+        <button
+          type="button"
+          className={`travel-btn${(mob.travel || []).includes('air') ? ' on' : ''}`}
+          onClick={() => onToggleTravel('air')}
+        >✈️ Airplane</button>
+        <button
+          type="button"
+          className={`travel-btn${(mob.travel || []).includes('car') ? ' on' : ''}`}
+          onClick={() => onToggleTravel('car')}
+        >🚗 Car</button>
+        {(mob.travel || []).length > 0 && (
+          <button type="button" className="info-btn" onClick={onOpenTravelInfo}>INFO</button>
+        )}
       </div>
 
       {days.length > 0 && (
