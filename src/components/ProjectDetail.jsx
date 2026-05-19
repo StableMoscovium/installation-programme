@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, getProjectMilestones } from '../lib/constants'
+import { PREP_STAGES, EQ_MAP, MON_NAMES, DAY_NAMES, parseDate, daysBetween, fmtDate, getProjectMilestones } from '../lib/constants'
 
 export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpdatePrep, onUpdateMilestone, onUpdateMilestonesList, onUpdateHold, onUpdateMobNotes, onUpdateKit }) {
   const mobs = Object.entries(project.mobs || {})
@@ -149,29 +149,34 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                     <span className="mob-detail-dates">{formatDateRange(mob.start, mob.end)}</span>
                   )}
                 </div>
-                {Object.keys(mob.days || {}).length > 0 && (
-                  <div className="mob-equip-summary">
-                    {Object.entries(mob.days).map(([iso, codes]) => {
-                      if (!codes.length) return null
-                      const d = parseDate(iso)
-                      return (
-                        <div key={iso} className="mob-equip-day">
-                          <span className="mob-equip-day-label">
-                            {DAY_NAMES[d.getDay()]} {d.getDate()} {MON_NAMES[d.getMonth()]}
-                          </span>
-                          <div className="mob-equip-chips">
-                            {codes.map(code => {
-                              const e = EQ_MAP[code]
-                              return e
-                                ? <span key={code} className="eq-chip-sm" style={{ background: e.bg, color: e.col }}>{e.label}</span>
-                                : null
-                            })}
+                {mob.start && mob.end && Object.keys(mob.days || {}).length > 0 && (() => {
+                  // Only show days within the current date range — strips ghost entries from old dates
+                  const validDays = new Set(daysBetween(parseDate(mob.start), parseDate(mob.end)))
+                  const entries = Object.entries(mob.days).filter(([iso, codes]) => validDays.has(iso) && codes.length > 0)
+                  if (!entries.length) return null
+                  return (
+                    <div className="mob-equip-summary">
+                      {entries.map(([iso, codes]) => {
+                        const d = parseDate(iso)
+                        return (
+                          <div key={iso} className="mob-equip-day">
+                            <span className="mob-equip-day-label">
+                              {DAY_NAMES[d.getDay()]} {d.getDate()} {MON_NAMES[d.getMonth()]}
+                            </span>
+                            <div className="mob-equip-chips">
+                              {codes.map(code => {
+                                const e = EQ_MAP[code]
+                                return e
+                                  ? <span key={code} className="eq-chip-sm" style={{ background: e.bg, color: e.col }}>{e.label}</span>
+                                  : null
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
+                        )
+                      })}
+                    </div>
+                  )
+                })()}
               </div>
 
               {/* Divider */}
