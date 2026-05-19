@@ -451,10 +451,11 @@ function DayInfoModal({ mob, iso, projNum, projName, phase, onClose, onUpdate })
               return (
                 <button
                   key={eq.code}
-                  className={`info-tab-btn${act ? ' active' : ''}${sel ? ' selected' : ''}`}
+                  className={`info-tab-btn${act ? ' active' : ''}${sel ? ' selected' : ' disabled'}`}
                   style={sel ? { background: eq.bg, borderColor: eq.col, color: eq.col, fontWeight: act ? 700 : 600 } : {}}
-                  onClick={() => setActiveTab(eq.code)}
-                  title={eq.title}
+                  onClick={() => sel && setActiveTab(eq.code)}
+                  disabled={!sel}
+                  title={sel ? eq.title : `${eq.title} — not assigned this day`}
                 >{eq.code}</button>
               )
             })}

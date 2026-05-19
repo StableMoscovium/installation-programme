@@ -293,7 +293,7 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .info-modal {
   background: var(--surface); border-radius: var(--radius-lg);
-  width: 680px; max-width: 95vw; max-height: 80vh;
+  width: 1300px; max-width: 96vw; max-height: 92vh;
   display: flex; flex-direction: column;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   overflow: hidden;
@@ -340,9 +340,12 @@ textarea { resize: vertical; line-height: 1.5; }
   cursor: pointer; color: var(--text-2); transition: all 0.1s;
   text-align: center;
 }
-.info-tab-btn:hover  { border-color: var(--blue); color: var(--blue); }
-.info-tab-btn.active { font-weight: 700; }
+.info-tab-btn:hover:not(:disabled)  { border-color: var(--blue); color: var(--blue); }
+.info-tab-btn.active   { font-weight: 700; }
 .info-tab-btn.selected { opacity: 1; }
+.info-tab-btn.disabled, .info-tab-btn:disabled {
+  opacity: 0.3; cursor: not-allowed;
+}
 
 /* Right content */
 .info-tab-content { flex: 1; padding: 20px 24px; overflow-y: auto; }
