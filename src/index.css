@@ -342,17 +342,35 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .info-tab-btn:hover  { border-color: var(--blue); color: var(--blue); }
 .info-tab-btn.active { font-weight: 700; }
+.info-tab-btn.selected { opacity: 1; }
 
 /* Right content */
-.info-tab-content {
-  flex: 1; padding: 20px 24px; overflow-y: auto;
+.info-tab-content { flex: 1; padding: 20px 24px; overflow-y: auto; }
+
+/* Project info block at top of right panel */
+.info-project-header {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding-bottom: 14px; margin-bottom: 16px;
+  border-bottom: 0.5px solid var(--border);
 }
-.info-tab-title {
-  font-size: 15px; font-weight: 600; margin-bottom: 12px;
+.info-proj-num  { font-size: 11px; font-weight: 600; font-family: var(--font-mono); color: var(--blue); }
+.info-proj-name { font-size: 15px; font-weight: 600; color: var(--text-1); }
+.info-proj-meta { font-size: 11px; color: var(--text-3); }
+
+/* Equipment section */
+.info-equip-section { display: flex; flex-direction: column; gap: 12px; }
+.info-equip-heading {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-.info-tab-placeholder {
-  font-size: 13px; color: var(--text-3); font-style: italic;
+.info-tab-title { font-size: 14px; font-weight: 600; }
+.info-assigned-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  background: var(--bg); color: var(--text-3); border: 0.5px solid var(--border-md);
 }
+.info-assigned-badge.assigned {
+  background: var(--green-light); color: var(--green); border-color: var(--green);
+}
+.info-tab-placeholder { font-size: 13px; color: var(--text-3); font-style: italic; }
 
 .sd-toggle {
   padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 600;

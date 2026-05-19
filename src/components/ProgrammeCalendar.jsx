@@ -111,33 +111,24 @@ export default function ProgrammeCalendar({ projects, onOpenProject }) {
 }
 
 function MobCard({ proj, mob, iso, onClick }) {
-  const colour  = proj.colour
-  const eq      = mob.days?.[iso] || []
-  const hasInfo = eq.length > 0
+  const colour   = proj.colour
+  const eq       = mob.days?.[iso] || []
   const complete = mob.dayInfo?.[iso]?.complete
-
-  // Outline: green if complete, red if equipment set but not checked
-  const outlineColor = hasInfo
-    ? (complete ? '#0F6E56' : '#C0392B')
-    : null
+  const eqOutline = eq.length > 0
+    ? (complete ? '1.5px solid #0F6E56' : '1.5px solid #C0392B')
+    : undefined
 
   return (
     <div
       className="mob-card"
-      style={{
-        background: colour.bg,
-        borderLeftColor: colour.border,
-        outline: outlineColor ? `1.5px solid ${outlineColor}` : undefined,
-        outlineOffset: '-1px',
-        cursor: 'pointer',
-      }}
+      style={{ background: colour.bg, borderLeftColor: colour.border, cursor: 'pointer' }}
       onClick={onClick}
     >
       <div className="mob-proj-num" style={{ color: colour.num }}>{proj.projNum}</div>
       <div className="mob-proj-name" style={{ color: colour.text }}>{proj.projName}</div>
       <div className="mob-phase" style={{ color: colour.text }}>{mob.phase}</div>
       {eq.length > 0 && (
-        <div className="mob-eq-row">
+        <div className="mob-eq-row" style={{ outline: eqOutline, outlineOffset: '2px', borderRadius: 3 }}>
           {eq.map(code => {
             const e = EQ_MAP[code]
             return e

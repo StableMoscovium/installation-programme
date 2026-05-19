@@ -394,6 +394,9 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
         <DayInfoModal
           mob={mobs[infoModal.mobIdx]}
           iso={infoModal.iso}
+          projNum={projNum}
+          projName={projName}
+          phase={mobs[infoModal.mobIdx].phase}
           onClose={() => setInfoModal(null)}
           onUpdate={(patch) => updateDayInfo(infoModal.mobIdx, infoModal.iso, patch)}
         />
@@ -403,17 +406,15 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
 }
 
 /* ── Day Info Modal ── */
-function DayInfoModal({ mob, iso, onClose, onUpdate }) {
-  const [activeTab, setActiveTab] = useState(null)
+function DayInfoModal({ mob, iso, projNum, projName, phase, onClose, onUpdate }) {
+  const [activeTab, setActiveTab] = useState(EQUIPMENT[0]?.code || null)
 
-  const equip = (mob.days?.[iso] || [])
-  const info  = mob.dayInfo?.[iso] || {}
-  const d     = parseDate(iso)
-  const label = `${DAY_NAMES[d.getDay()]} ${d.getDate()} ${MON_NAMES[d.getMonth()]}`
-
-  // Auto-select first tab
-  useState(() => { if (equip.length && !activeTab) setActiveTab(equip[0]) }, [])
-  const currentTab = activeTab || equip[0] || null
+  const assigned = mob.days?.[iso] || []
+  const info     = mob.dayInfo?.[iso] || {}
+  const d        = parseDate(iso)
+  const dayLabel = `${DAY_NAMES[d.getDay()]} ${d.getDate()} ${MON_NAMES[d.getMonth()]}`
+  const currentEq = EQ_MAP[activeTab]
+  const isAssigned = assigned.includes(activeTab)
 
   return (
     <div className="info-modal-overlay" onClick={onClose}>
@@ -422,15 +423,18 @@ function DayInfoModal({ mob, iso, onClose, onUpdate }) {
         {/* Header */}
         <div className="info-modal-header">
           <div>
-            <div className="info-modal-date">{label}</div>
-            <div className="info-modal-sub">Equipment checklist</div>
+            <div className="info-modal-date">{dayLabel} — Equipment Info</div>
+            <div className="info-modal-sub">{projNum} · {projName} · {phase}</div>
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <button
               className={`info-complete-btn${info.complete ? ' on' : ''}`}
               onClick={() => onUpdate({ complete: !info.complete })}
             >
               {info.complete ? '✓ Complete' : 'Mark complete'}
+            </button>
+            <button className="btn btn-primary" style={{ fontSize: 12, padding: '5px 16px' }} onClick={onClose}>
+              Save
             </button>
             <button className="info-close-btn" onClick={onClose}>✕</button>
           </div>
@@ -438,38 +442,54 @@ function DayInfoModal({ mob, iso, onClose, onUpdate }) {
 
         {/* Body */}
         <div className="info-modal-body">
-          {/* Left — equipment tab list */}
+
+          {/* Left — all equipment types, assigned ones highlighted */}
           <div className="info-tab-list">
-            {equip.map(code => {
-              const e = EQ_MAP[code]
+            {EQUIPMENT.map(eq => {
+              const sel = assigned.includes(eq.code)
+              const act = activeTab === eq.code
               return (
                 <button
-                  key={code}
-                  className={`info-tab-btn${currentTab === code ? ' active' : ''}`}
-                  style={currentTab === code ? { background: e?.bg, borderColor: e?.col, color: e?.col } : {}}
-                  onClick={() => setActiveTab(code)}
-                >
-                  {code}
-                </button>
+                  key={eq.code}
+                  className={`info-tab-btn${act ? ' active' : ''}${sel ? ' selected' : ''}`}
+                  style={sel ? { background: eq.bg, borderColor: eq.col, color: eq.col, fontWeight: act ? 700 : 600 } : {}}
+                  onClick={() => setActiveTab(eq.code)}
+                  title={eq.title}
+                >{eq.code}</button>
               )
             })}
           </div>
 
-          {/* Right — tab content */}
+          {/* Right — project info + tab content */}
           <div className="info-tab-content">
-            {currentTab && (() => {
-              const e = EQ_MAP[currentTab]
-              return (
-                <div>
-                  <div className="info-tab-title" style={{ color: e?.col }}>
-                    {e?.code} — {e?.title}
-                  </div>
-                  <p className="info-tab-placeholder">
-                    Input fields for {e?.title} coming next.
-                  </p>
-                </div>
-              )
-            })()}
+
+            {/* Project info block */}
+            <div className="info-project-header">
+              <span className="info-proj-num">{projNum}</span>
+              <span className="info-proj-name">{projName}</span>
+              <span className="info-proj-meta">{phase} · {dayLabel}</span>
+            </div>
+
+            {/* Equipment section */}
+            <div className="info-equip-section">
+              <div className="info-equip-heading">
+                <span className="mob-eq-chip" style={{ background: currentEq?.bg, color: currentEq?.col, fontSize: 11, padding: '2px 8px' }}>
+                  {currentEq?.code}
+                </span>
+                <span className="info-tab-title" style={{ color: currentEq?.col }}>{currentEq?.title}</span>
+                {isAssigned
+                  ? <span className="info-assigned-badge assigned">✓ Assigned this day</span>
+                  : <span className="info-assigned-badge">Not assigned this day</span>
+                }
+              </div>
+
+              {isAssigned ? (
+                <p className="info-tab-placeholder">Input fields for {currentEq?.title} coming next.</p>
+              ) : (
+                <p className="info-tab-placeholder">{currentEq?.title} is not assigned to this day. Go back to the mob form to add it.</p>
+              )}
+            </div>
+
           </div>
         </div>
 
