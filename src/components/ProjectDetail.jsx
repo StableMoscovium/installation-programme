@@ -143,15 +143,6 @@ export default function ProjectDetail({ project, onBack, onEdit, onDelete, onUpd
                     <span className="mob-detail-dates">{formatDateRange(mob.start, mob.end)}</span>
                   )}
                 </div>
-                {mob.tasks.length > 0 && (
-                  <ul className="mob-task-list">
-                    {mob.tasks.map(t => (
-                      <li key={t} className="mob-task-item">
-                        <span className="task-dot">·</span> {t}
-                      </li>
-                    ))}
-                  </ul>
-                )}
                 {Object.keys(mob.days || {}).length > 0 && (
                   <div className="mob-equip-summary">
                     {Object.entries(mob.days).map(([iso, codes]) => {

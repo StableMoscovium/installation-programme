@@ -164,7 +164,11 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     }
     // colour comes from state — chosen by user
     const mobMap = {}
-    mobs.forEach((m, i) => { mobMap[`mob${i}`] = m })
+    mobs.forEach((m, i) => {
+      // Strip legacy tasks field — replaced by travel type
+      const { tasks, ...cleanMob } = m
+      mobMap[`mob${i}`] = cleanMob
+    })
 
     onSave({
       projNum:     projNum.trim(),
