@@ -218,12 +218,6 @@ export default function App() {
           >
             <PlusIcon /> Add project
           </button>
-          <button
-            className={`nav-item ${activeTab === 'report' ? 'active' : ''}`}
-            onClick={() => setActiveTab('report')}
-          >
-            <ReportIcon /> Prep report
-          </button>
         </nav>
       </header>
 
@@ -271,9 +265,6 @@ export default function App() {
             onUpdateMilestonesList={(list) => updateMilestonesList(selectedProject.projNum, list)}
             onUpdateHold={(onHold) => updateHold(selectedProject.projNum, onHold)}
           />
-        )}
-        {!loading && activeTab === 'report' && (
-          <PrepSummary projects={projects} />
         )}
       </main>
     </div>
