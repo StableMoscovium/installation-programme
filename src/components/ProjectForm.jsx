@@ -12,6 +12,7 @@ const BLANK_MOB = () => ({
   end: '',
   tasks: [],
   days: {},
+  standDown: {},
   prep: 0,
 })
 
@@ -104,6 +105,15 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
     setMobs(prev => prev.map((m, mi) =>
       mi === mobIdx ? { ...m, tasks: [...m.tasks, name] } : m
     ))
+  }
+
+  function toggleStandDown(mobIdx, iso) {
+    setMobs(prev => prev.map((m, mi) => {
+      if (mi !== mobIdx) return m
+      const sd = { ...(m.standDown || {}) }
+      if (sd[iso]) { delete sd[iso] } else { sd[iso] = true }
+      return { ...m, standDown: sd }
+    }))
   }
 
   function toggleEquip(mobIdx, iso, code) {
@@ -274,6 +284,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
                 onToggleTask={task => toggleTask(mi, task)}
                 onAddCustomTask={() => addCustomTask(mi)}
                 onToggleEquip={(iso, code) => toggleEquip(mi, iso, code)}
+                onToggleStandDown={(iso) => toggleStandDown(mi, iso)}
                 onRemove={mobs.length > 1 ? () => removeMob(mi) : null}
               />
             </div>
@@ -370,7 +381,7 @@ export default function ProjectForm({ initialData, onSave, onCancel }) {
   )
 }
 
-function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onToggleEquip, onRemove }) {
+function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onToggleEquip, onToggleStandDown, onRemove }) {
   const days = mob.start && mob.end
     ? daysBetween(parseDate(mob.start), parseDate(mob.end))
     : []
@@ -421,22 +432,34 @@ function MobBlock({ mob, mobIndex, onUpdate, onToggleTask, onAddCustomTask, onTo
               const d = parseDate(iso)
               const label = `${DAY_NAMES[d.getDay()]} ${d.getDate()} ${MON_NAMES[d.getMonth()]}`
               const active = mob.days?.[iso] || []
+              const isSD = !!(mob.standDown?.[iso])
               return (
-                <div key={iso} className="eq-day-row">
+                <div key={iso} className={`eq-day-row${isSD ? ' sd-day' : ''}`}>
                   <span className="eq-day-label">{label}</span>
-                  <div className="eq-toggles">
-                    {EQUIPMENT.map(eq => (
-                      <button
-                        key={eq.code}
-                        className={`eq-toggle${active.includes(eq.code) ? ' on' : ''}`}
-                        style={{ background: eq.bg, color: eq.col }}
-                        onClick={() => onToggleEquip(iso, eq.code)}
-                        title={eq.title}
-                      >
-                        {eq.label}
-                      </button>
-                    ))}
-                  </div>
+                  {isSD
+                    ? <span className="sd-label">Stand Down</span>
+                    : (
+                      <div className="eq-toggles">
+                        {EQUIPMENT.map(eq => (
+                          <button
+                            key={eq.code}
+                            className={`eq-toggle${active.includes(eq.code) ? ' on' : ''}`}
+                            style={{ background: eq.bg, color: eq.col }}
+                            onClick={() => onToggleEquip(iso, eq.code)}
+                            title={eq.title}
+                          >
+                            {eq.label}
+                          </button>
+                        ))}
+                      </div>
+                    )
+                  }
+                  <button
+                    className={`sd-toggle${isSD ? ' on' : ''}`}
+                    onClick={() => onToggleStandDown(iso)}
+                    title="Mark as Stand Down — hides this day from the calendar"
+                    type="button"
+                  >SD</button>
                 </div>
               )
             })}

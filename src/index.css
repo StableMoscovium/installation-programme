@@ -271,8 +271,19 @@ textarea { resize: vertical; line-height: 1.5; }
 .eq-day-list { display: flex; flex-direction: column; gap: 2px; }
 .eq-day-row  { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
 .eq-day-row:last-child { border-bottom: none; }
+.eq-day-row.sd-day { opacity: 0.5; }
 .eq-day-label { font-size: 11px; color: var(--text-2); min-width: 90px; }
-.eq-toggles  { display: flex; gap: 4px; flex-wrap: wrap; }
+.eq-toggles  { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+.sd-label { font-size: 11px; color: var(--red); font-weight: 500; flex: 1; }
+
+.sd-toggle {
+  padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 600;
+  font-family: var(--font-mono); cursor: pointer; margin-left: auto;
+  border: 0.5px solid var(--border-md); background: transparent;
+  color: var(--text-3); transition: all 0.1s; flex-shrink: 0;
+}
+.sd-toggle:hover { border-color: var(--red); color: var(--red); }
+.sd-toggle.on { background: var(--red-light); border-color: var(--red); color: var(--red); }
 .eq-toggle {
   padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 600;
   font-family: var(--font-mono); cursor: pointer; border: 0.5px solid transparent;

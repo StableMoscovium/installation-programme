@@ -35,6 +35,7 @@ export default function ProgrammeCalendar({ projects, onOpenProject }) {
       const mob = proj.mobs[mobKey]
       if (!mob.start || !mob.end) return
       daysBetween(parseDate(mob.start), parseDate(mob.end)).forEach(iso => {
+        if (mob.standDown?.[iso]) return  // skip stand-down days
         if (byDay[iso] !== undefined) {
           byDay[iso].push({ proj, mob, mobKey, iso })
         }
